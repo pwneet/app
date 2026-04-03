@@ -1,0 +1,3795 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FreeStudy — by TushyaSharma</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+
+/* =========================================
+   GOOGLE FONTS
+   ========================================= */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap');
+
+/* =========================================
+   CSS VARIABLES
+   ========================================= */
+
+/* ── DARK MODE: Black + White + Green accent ── */
+:root {
+  --bg:       #0a0a0a;
+  --bg2:      #111111;
+  --bg3:      #1a1a1a;
+  --card:     #141414;
+  --card2:    #1c1c1c;
+  --border:   #2a2a2a;
+  --border2:  #333333;
+  --text:     #ffffff;
+  --text2:    #a0a0a0;
+  --text3:    #555555;
+  --accent:   #22c55e;
+  --accent2:  #16a34a;
+  --accent3:  #4ade80;
+  --success:  #22c55e;
+  --warning:  #f59e0b;
+  --danger:   #ef4444;
+  --pink:     #4ade80;
+  --sidebar:  248px;
+  --r:        12px;
+  --r2:       8px;
+  --shadow:   0 4px 24px rgba(0,0,0,.7);
+  --shadowlg: 0 12px 48px rgba(0,0,0,.8);
+  --glow:     0 0 32px rgba(34,197,94,.15);
+}
+
+/* ── LIGHT MODE: White + Black + Blue accent ── */
+[data-theme="light"] {
+  --bg:      #ffffff;
+  --bg2:     #fafafa;
+  --bg3:     #f4f4f4;
+  --card:    #ffffff;
+  --card2:   #f8f8f8;
+  --border:  #e5e5e5;
+  --border2: #d4d4d4;
+  --text:    #0a0a0a;
+  --text2:   #525252;
+  --text3:   #a3a3a3;
+  --accent:  #1d4ed8;
+  --accent2: #1e3a8a;
+  --accent3: #3b82f6;
+  --success: #16a34a;
+  --warning: #d97706;
+  --danger:  #dc2626;
+  --pink:    #1d4ed8;
+  --shadow:   0 4px 16px rgba(0,0,0,.06);
+  --shadowlg: 0 12px 36px rgba(0,0,0,.1);
+  --glow:     0 0 24px rgba(29,78,216,.1);
+}
+
+/* =========================================
+   COPY PROTECTION
+   ========================================= */
+* {
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+  user-select: none !important;
+  -webkit-touch-callout: none !important;
+}
+input, textarea {
+  -webkit-user-select: text !important;
+  -moz-user-select: text !important;
+  user-select: text !important;
+}
+img {
+  pointer-events: none !important;
+  -webkit-user-drag: none !important;
+  user-drag: none !important;
+}
+
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body {
+  font-family:'Plus Jakarta Sans', system-ui, sans-serif;
+  background:var(--bg); color:var(--text);
+  min-height:100vh; overflow-x:hidden;
+  transition:background .25s, color .25s;
+  font-size:14px; line-height:1.5;
+}
+::-webkit-scrollbar { width:5px; height:5px; }
+::-webkit-scrollbar-track { background:transparent; }
+::-webkit-scrollbar-thumb { background:var(--border2); border-radius:4px; }
+a { text-decoration:none; color:inherit; }
+button { font-family:inherit; }
+input, select, textarea { font-family:inherit; }
+
+/* =========================================
+   AUTH PAGES
+   ========================================= */
+.auth-page {
+  min-height:100vh; display:flex; align-items:center;
+  justify-content:center; padding:20px;
+  background:var(--bg); position:relative; overflow:hidden;
+}
+.auth-orbs { position:absolute; inset:0; pointer-events:none; }
+/* Dark = green orbs */
+.auth-orbs::before {
+  content:''; position:absolute;
+  width:600px; height:600px; border-radius:50%;
+  background:radial-gradient(circle, rgba(34,197,94,.10) 0%, transparent 65%);
+  top:-260px; right:-180px; animation:orbFloat 9s ease-in-out infinite;
+}
+.auth-orbs::after {
+  content:''; position:absolute;
+  width:500px; height:500px; border-radius:50%;
+  background:radial-gradient(circle, rgba(74,222,128,.07) 0%, transparent 65%);
+  bottom:-180px; left:-160px; animation:orbFloat 12s ease-in-out infinite reverse;
+}
+/* Light = blue orbs */
+[data-theme="light"] .auth-orbs::before {
+  background:radial-gradient(circle, rgba(29,78,216,.09) 0%, transparent 65%);
+}
+[data-theme="light"] .auth-orbs::after {
+  background:radial-gradient(circle, rgba(59,130,246,.07) 0%, transparent 65%);
+}
+@keyframes orbFloat {
+  0%,100%{transform:translate(0,0) scale(1)}
+  50%{transform:translate(20px,-20px) scale(1.04)}
+}
+
+.auth-card {
+  background:var(--card); border:1px solid var(--border);
+  border-radius:20px; padding:40px 36px;
+  width:100%; max-width:420px;
+  box-shadow:var(--shadowlg); position:relative; z-index:1;
+  animation:slideUp .4s cubic-bezier(.22,.68,0,1.2);
+}
+.auth-head { text-align:center; margin-bottom:30px; }
+.auth-logo-box {
+  width:68px; height:68px; border-radius:18px;
+  background:var(--accent);
+  display:inline-flex; align-items:center; justify-content:center;
+  font-size:30px; margin-bottom:14px;
+  box-shadow:0 8px 24px rgba(34,197,94,.3);
+}
+[data-theme="light"] .auth-logo-box {
+  box-shadow:0 8px 24px rgba(29,78,216,.25);
+}
+.auth-head h1 {
+  font-size:26px; font-weight:800; letter-spacing:-.5px;
+  color:var(--text);
+}
+.auth-head p { color:var(--text2); font-size:13px; margin-top:5px; }
+
+/* =========================================
+   FORM ELEMENTS
+   ========================================= */
+.fg { margin-bottom:15px; }
+.fg label {
+  display:block; font-size:11.5px; font-weight:700;
+  color:var(--text2); margin-bottom:6px;
+  text-transform:uppercase; letter-spacing:.6px;
+}
+.fc {
+  width:100%; background:var(--bg3);
+  border:1.5px solid var(--border); border-radius:10px;
+  padding:11px 14px; color:var(--text); font-size:14px;
+  outline:none; transition:border-color .2s, box-shadow .2s;
+}
+.fc:focus { border-color:var(--accent); box-shadow:0 0 0 3px rgba(34,197,94,.12); }
+[data-theme="light"] .fc:focus { box-shadow:0 0 0 3px rgba(29,78,216,.1); }
+.fc:disabled { opacity:.55; cursor:not-allowed; }
+select.fc option { background:var(--bg2); }
+
+.fp-btn {
+  width:100%; padding:12px; border-radius:10px;
+  border:2px dashed var(--border2); background:transparent;
+  color:var(--text2); font-size:13.5px; cursor:pointer;
+  transition:all .2s; display:flex; align-items:center;
+  justify-content:center; gap:8px; margin-bottom:14px;
+}
+.fp-btn:hover { border-color:var(--accent); color:var(--accent); background:rgba(59,130,246,.05); }
+
+.auth-divider {
+  display:flex; align-items:center; gap:10px;
+  color:var(--text3); font-size:12px; margin:14px 0;
+}
+.auth-divider::before,.auth-divider::after {
+  content:''; flex:1; height:1px; background:var(--border);
+}
+.auth-switch { text-align:center; margin-top:18px; color:var(--text2); font-size:13px; }
+.auth-switch span { color:var(--accent); cursor:pointer; font-weight:700; }
+.auth-switch span:hover { text-decoration:underline; }
+
+/* =========================================
+   BUTTONS
+   ========================================= */
+.btn {
+  display:inline-flex; align-items:center; justify-content:center;
+  gap:6px; padding:10px 18px; border-radius:10px;
+  border:none; font-size:13.5px; font-weight:700;
+  cursor:pointer; transition:all .18s; white-space:nowrap;
+}
+.btn-p {
+  background:var(--accent);
+  color:#fff; box-shadow:0 4px 14px rgba(34,197,94,.25);
+}
+[data-theme="light"] .btn-p {
+  box-shadow:0 4px 14px rgba(29,78,216,.2);
+}
+.btn-p:hover { transform:translateY(-1px); filter:brightness(1.1); box-shadow:0 6px 20px rgba(34,197,94,.35); }
+[data-theme="light"] .btn-p:hover { box-shadow:0 6px 20px rgba(29,78,216,.3); }
+.btn-sec { background:var(--bg3); color:var(--text); border:1px solid var(--border); }
+.btn-sec:hover { background:var(--card2); border-color:var(--border2); }
+.btn-ok  { background:linear-gradient(135deg,#059669,#047857); color:#fff; }
+.btn-ok:hover  { box-shadow:0 4px 14px rgba(16,185,129,.35); }
+.btn-del { background:linear-gradient(135deg,#dc2626,#b91c1c); color:#fff; }
+.btn-del:hover { box-shadow:0 4px 14px rgba(239,68,68,.35); }
+.btn-warn{ background:linear-gradient(135deg,#d97706,#b45309); color:#fff; }
+.btn-warn:hover{ box-shadow:0 4px 14px rgba(245,158,11,.35); }
+.btn-ghost{ background:transparent; color:var(--text2); border:1px solid var(--border); }
+.btn-ghost:hover{ background:var(--bg3); color:var(--text); }
+.btn-full { width:100%; }
+.btn-lg { padding:13px 22px; font-size:15px; border-radius:12px; }
+.btn-sm { padding:7px 13px; font-size:12px; border-radius:8px; gap:4px; }
+.btn-xs { padding:5px 10px; font-size:11.5px; border-radius:7px; gap:3px; }
+.row2 { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.row2 .fg { margin:0; }
+
+/* =========================================
+   APP LAYOUT
+   ========================================= */
+.app { display:flex; min-height:100vh; }
+
+/* SIDEBAR */
+.sidebar {
+  width:var(--sidebar); background:var(--bg2);
+  border-right:1px solid var(--border);
+  display:flex; flex-direction:column;
+  position:fixed; top:0; left:0; bottom:0; z-index:200;
+  overflow-y:auto; overflow-x:hidden;
+  transition:transform .3s cubic-bezier(.4,0,.2,1);
+}
+.sb-head { padding:20px 16px 14px; }
+.sb-brand { display:flex; align-items:center; gap:10px; margin-bottom:3px; }
+.sb-icon {
+  width:38px; height:38px; border-radius:11px;
+  background:var(--accent);
+  display:flex; align-items:center; justify-content:center;
+  font-size:18px; box-shadow:0 4px 12px rgba(34,197,94,.3); flex-shrink:0;
+}
+[data-theme="light"] .sb-icon { box-shadow:0 4px 12px rgba(29,78,216,.25); }
+.sb-brand h2 { font-size:18px; font-weight:800; }
+.sb-role {
+  font-size:10.5px; color:var(--text3); font-weight:700;
+  text-transform:uppercase; letter-spacing:.9px; padding-left:48px;
+}
+.sb-user {
+  margin:10px 12px 4px; padding:11px 12px; border-radius:11px;
+  background:var(--bg3); border:1px solid var(--border);
+  display:flex; align-items:center; gap:10px;
+}
+.sb-av {
+  width:36px; height:36px; border-radius:9px; flex-shrink:0;
+  background:linear-gradient(135deg, var(--accent), var(--accent2));
+  display:flex; align-items:center; justify-content:center;
+  font-weight:800; font-size:14px; color:#fff; overflow:hidden;
+}
+.sb-av img { width:100%; height:100%; object-fit:cover; }
+.sb-uname { font-weight:700; font-size:13px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.sb-uemail { font-size:11px; color:var(--text3); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.sb-nav { padding:8px 10px; flex:1; }
+.nav-sec { font-size:10px; color:var(--text3); font-weight:800; text-transform:uppercase; letter-spacing:1.1px; padding:10px 10px 5px; }
+.nav-item {
+  display:flex; align-items:center; gap:10px;
+  padding:10px 12px; border-radius:10px; cursor:pointer;
+  color:var(--text2); font-size:13.5px; font-weight:600;
+  transition:all .18s; margin-bottom:1px; position:relative; user-select:none;
+}
+.nav-item:hover { background:var(--bg3); color:var(--text); }
+.nav-item.active {
+  background:rgba(34,197,94,.1);
+  color:var(--accent);
+}
+[data-theme="light"] .nav-item.active { background:rgba(29,78,216,.08); }
+.nav-item.active::before {
+  content:''; position:absolute; left:0; top:22%; bottom:22%;
+  width:3px; border-radius:3px; background:var(--accent);
+}
+.ni-ic { font-size:16px; width:22px; text-align:center; flex-shrink:0; }
+.nav-badge {
+  background:var(--danger); color:#fff; font-size:10px;
+  padding:1px 6px; border-radius:20px; font-weight:800; margin-left:auto;
+}
+.sb-foot { padding:12px; border-top:1px solid var(--border); }
+.sb-action {
+  display:flex; align-items:center; gap:9px; padding:10px 12px;
+  border-radius:10px; cursor:pointer; font-size:13px; font-weight:600;
+  transition:all .18s; color:var(--text2);
+}
+.sb-action:hover { background:var(--bg3); color:var(--text); }
+.sb-logout { color:var(--danger); }
+.sb-logout:hover { background:rgba(239,68,68,.08); color:var(--danger); }
+
+/* MAIN */
+.main { margin-left:var(--sidebar); flex:1; display:flex; flex-direction:column; min-height:100vh; }
+
+/* TOPBAR */
+.topbar {
+  background:var(--bg2); border-bottom:1px solid var(--border);
+  padding:13px 22px; display:flex; align-items:center;
+  justify-content:space-between; position:sticky; top:0; z-index:100;
+}
+.tb-left { display:flex; align-items:center; gap:13px; }
+.tb-title { font-size:18px; font-weight:800; letter-spacing:-.3px; }
+.tb-right { display:flex; align-items:center; gap:8px; }
+.tb-btn {
+  width:36px; height:36px; border-radius:9px; background:var(--bg3);
+  border:1px solid var(--border); color:var(--text);
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; font-size:15px; transition:all .18s; position:relative;
+}
+.tb-btn:hover { background:var(--card2); border-color:var(--border2); }
+.tb-dot {
+  position:absolute; top:7px; right:7px; width:7px; height:7px;
+  background:var(--danger); border-radius:50%; border:1.5px solid var(--bg2);
+}
+.hamburger { display:none; }
+
+/* PAGE */
+.pw { padding:22px; flex:1; }
+
+/* =========================================
+   GRID & CARDS
+   ========================================= */
+.g1{display:grid;gap:14px;}
+.g2{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
+
+.card {
+  background:var(--card); border:1px solid var(--border);
+  border-radius:var(--r); padding:18px;
+  transition:border-color .2s;
+}
+.card:hover { border-color:var(--border2); }
+.card-p24 { padding:24px; }
+
+/* STAT CARD */
+.stat {
+  display:flex; align-items:center; gap:15px;
+  background:var(--card); border:1px solid var(--border);
+  border-radius:var(--r); padding:18px;
+}
+.stat-ic {
+  width:50px; height:50px; border-radius:13px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:22px; flex-shrink:0;
+}
+.ic-blue   { background:rgba(59,130,246,.12); }
+.ic-purple { background:rgba(109,40,217,.12); }
+.ic-green  { background:rgba(16,185,129,.12); }
+.ic-yellow { background:rgba(245,158,11,.12); }
+.ic-pink   { background:rgba(236,72,153,.12); }
+.ic-cyan   { background:rgba(6,182,212,.12); }
+.ic-red    { background:rgba(239,68,68,.12);  }
+.stat-val { font-size:28px; font-weight:800; line-height:1; }
+.stat-lbl { font-size:12px; color:var(--text2); margin-top:4px; font-weight:500; }
+
+/* SECTION TITLE */
+.sec-t {
+  font-size:15px; font-weight:800; margin-bottom:14px;
+  display:flex; align-items:center; gap:7px; color:var(--text);
+}
+.sec-t-sm { font-size:13px; font-weight:700; margin-bottom:10px; display:flex; align-items:center; gap:6px; }
+
+/* =========================================
+   BREADCRUMB
+   ========================================= */
+.bc {
+  display:flex; align-items:center; gap:6px; flex-wrap:wrap;
+  font-size:12.5px; color:var(--text3); margin-bottom:14px;
+}
+.bc-a { cursor:pointer; transition:color .15s; }
+.bc-a:hover { color:var(--accent); }
+.bc-sep { color:var(--border2); }
+.bc-cur { color:var(--text); font-weight:700; }
+
+/* =========================================
+   TABLE
+   ========================================= */
+.tw { overflow-x:auto; }
+table { width:100%; border-collapse:collapse; font-size:13.5px; }
+th {
+  text-align:left; padding:10px 13px; color:var(--text3);
+  font-size:10.5px; text-transform:uppercase; letter-spacing:.7px; font-weight:800;
+  border-bottom:1px solid var(--border); background:var(--bg3);
+}
+td { padding:13px 13px; border-bottom:1px solid var(--border); vertical-align:middle; }
+tr:last-child td { border-bottom:none; }
+tbody tr { transition:background .12s; }
+tbody tr:hover td { background:rgba(59,130,246,.04); }
+
+/* =========================================
+   BADGES
+   ========================================= */
+.badge {
+  display:inline-flex; align-items:center; gap:4px;
+  padding:3px 9px; border-radius:20px; font-size:11.5px; font-weight:700;
+}
+.b-ok     { background:rgba(16,185,129,.12); color:var(--success); }
+.b-warn   { background:rgba(245,158,11,.12);  color:var(--warning); }
+.b-del    { background:rgba(239,68,68,.12);   color:var(--danger);  }
+.b-blue   { background:rgba(59,130,246,.12);  color:var(--accent);  }
+.b-purple { background:rgba(109,40,217,.12);  color:#a78bfa;        }
+.b-cyan   { background:rgba(6,182,212,.12);   color:var(--accent3); }
+.b-pink   { background:rgba(236,72,153,.12);  color:var(--pink);    }
+
+/* =========================================
+   MODAL
+   ========================================= */
+.modal-ov {
+  position:fixed; inset:0; background:rgba(0,0,0,.72);
+  backdrop-filter:blur(8px); z-index:500;
+  display:none; align-items:center; justify-content:center; padding:20px;
+  animation:fadeIn .2s ease;
+}
+.modal-ov.show { display:flex; }
+.modal {
+  background:var(--card); border:1px solid var(--border2);
+  border-radius:20px; padding:26px; width:100%; max-width:490px;
+  animation:slideUp .28s cubic-bezier(.22,.68,0,1.2);
+  max-height:90vh; overflow-y:auto;
+}
+.mh { display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; }
+.mh h3 { font-size:17px; font-weight:800; }
+.mc-btn {
+  width:30px; height:30px; border-radius:8px; background:var(--bg3);
+  border:none; cursor:pointer; font-size:15px; color:var(--text2);
+  display:flex; align-items:center; justify-content:center; transition:all .15s;
+}
+.mc-btn:hover { background:var(--border); color:var(--text); }
+.m-actions { display:flex; gap:10px; margin-top:20px; }
+.m-actions .btn { flex:1; }
+
+/* =========================================
+   TOAST
+   ========================================= */
+.toast-ctr {
+  position:fixed; bottom:22px; right:22px; z-index:900;
+  display:flex; flex-direction:column; gap:7px; pointer-events:none;
+}
+.toast {
+  background:var(--card2); border:1px solid var(--border2);
+  border-radius:12px; padding:12px 15px;
+  display:flex; align-items:center; gap:9px; font-size:13.5px;
+  box-shadow:var(--shadowlg); animation:toastIn .3s ease;
+  max-width:310px; pointer-events:all; font-weight:600;
+  border-left:3px solid var(--accent);
+}
+.toast.t-ok  { border-left-color:var(--success); }
+.toast.t-err { border-left-color:var(--danger);  }
+.toast.t-wrn { border-left-color:var(--warning); }
+
+/* =========================================
+   PROGRESS
+   ========================================= */
+.prog { background:var(--bg3); border-radius:20px; height:6px; overflow:hidden; }
+.prog-bar {
+  height:100%; border-radius:20px;
+  background:var(--accent);
+  transition:width .7s ease;
+}
+
+/* =========================================
+   SEARCH
+   ========================================= */
+.search-row { position:relative; }
+.search-row .si { position:absolute; left:12px; top:50%; transform:translateY(-50%); font-size:14px; color:var(--text3); }
+.search-row .fc { padding-left:36px !important; }
+
+/* =========================================
+   ITEM ROW
+   ========================================= */
+.item-row {
+  display:flex; align-items:center; gap:13px;
+  padding:13px 14px; border:1px solid var(--border);
+  border-radius:11px; cursor:pointer; background:var(--card);
+  transition:all .2s; margin-bottom:8px;
+}
+.item-row:hover {
+  border-color:var(--accent); transform:translateX(3px);
+  background:var(--card2); box-shadow:var(--glow);
+}
+.item-ic {
+  width:44px; height:44px; border-radius:11px; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center; font-size:20px;
+  overflow:hidden; background:linear-gradient(135deg, rgba(59,130,246,.12), rgba(109,40,217,.1));
+}
+.item-ic img { width:100%; height:100%; object-fit:cover; border-radius:11px; }
+.item-info { flex:1; min-width:0; }
+.item-info h4 { font-size:14px; font-weight:700; margin-bottom:2px; }
+.item-info p  { font-size:12px; color:var(--text2); }
+.item-acts { display:flex; gap:5px; flex-shrink:0; }
+.ia { color:var(--text3); font-size:18px; }
+
+/* =========================================
+   BATCH CARD
+   ========================================= */
+.batch-card {
+  background:var(--card); border:1px solid var(--border);
+  border-radius:var(--r); padding:18px; transition:all .22s;
+}
+.batch-card:hover {
+  border-color:var(--accent); transform:translateY(-3px);
+  box-shadow:var(--glow);
+}
+.bch { display:flex; align-items:flex-start; gap:13px; margin-bottom:13px; }
+.b-img {
+  width:50px; height:50px; border-radius:13px; flex-shrink:0;
+  background:linear-gradient(135deg, var(--accent), var(--accent2));
+  display:flex; align-items:center; justify-content:center; font-size:24px; overflow:hidden;
+}
+.b-img img { width:100%; height:100%; object-fit:cover; }
+.b-meta { display:flex; gap:10px; flex-wrap:wrap; margin-top:10px; }
+.b-meta span { font-size:11.5px; color:var(--text2); display:flex; align-items:center; gap:3px; }
+.b-acts { display:flex; gap:7px; margin-top:12px; }
+
+/* =========================================
+   CONTENT ITEM
+   ========================================= */
+.ci {
+  display:flex; align-items:center; gap:11px;
+  padding:12px 14px; border:1px solid var(--border);
+  border-radius:11px; margin-bottom:8px; background:var(--card2);
+  transition:border-color .18s;
+}
+.ci:hover { border-color:var(--border2); }
+.ci-icon { font-size:22px; width:30px; text-align:center; flex-shrink:0; }
+.ci-info { flex:1; min-width:0; }
+.ci-name { font-size:13.5px; font-weight:700; margin-bottom:3px; }
+.ci-meta { font-size:11.5px; color:var(--text2); }
+.ci-acts { display:flex; gap:5px; flex-shrink:0; flex-wrap:wrap; }
+
+/* =========================================
+   TABS
+   ========================================= */
+.tabs {
+  display:flex; gap:3px; background:var(--bg3);
+  padding:4px; border-radius:12px; margin-bottom:18px;
+}
+.tab {
+  flex:1; padding:8px 10px; text-align:center; border-radius:9px;
+  cursor:pointer; font-size:12.5px; font-weight:700;
+  color:var(--text2); transition:all .18s;
+}
+.tab.on { background:var(--card); color:var(--text); box-shadow:0 2px 8px rgba(0,0,0,.25); }
+
+/* =========================================
+   ATTENDANCE CALENDAR
+   ========================================= */
+.att-grid {
+  display:grid; grid-template-columns:repeat(7, 1fr); gap:5px;
+}
+.att-cell {
+  aspect-ratio:1; border-radius:8px; display:flex; align-items:center;
+  justify-content:center; font-size:12px; font-weight:600;
+  background:var(--bg3); color:var(--text3);
+}
+.att-cell.present { background:rgba(16,185,129,.15); color:var(--success); }
+.att-cell.today   { border:2px solid var(--accent); color:var(--accent); }
+.att-cell.hdr     { background:transparent; font-size:10.5px; font-weight:800; color:var(--text3); }
+
+/* =========================================
+   STUDY TIMER
+   ========================================= */
+.timer-display {
+  font-size:64px; font-weight:800; text-align:center;
+  font-family:'JetBrains Mono', monospace; letter-spacing:3px;
+  color:var(--accent);
+  padding:24px 0;
+}
+
+/* =========================================
+   PROFILE
+   ========================================= */
+.profile-photo {
+  width:96px; height:96px; border-radius:50%;
+  background:linear-gradient(135deg, var(--accent), var(--accent2));
+  display:flex; align-items:center; justify-content:center;
+  font-size:38px; color:#fff; overflow:hidden;
+  cursor:pointer; position:relative; border:3px solid var(--border2);
+  transition:border-color .2s; flex-shrink:0;
+}
+.profile-photo:hover { border-color:var(--accent); }
+.profile-photo img { width:100%; height:100%; object-fit:cover; }
+.photo-ov {
+  position:absolute; inset:0; background:rgba(0,0,0,.52);
+  display:flex; align-items:center; justify-content:center;
+  font-size:24px; opacity:0; transition:opacity .2s;
+}
+.profile-photo:hover .photo-ov { opacity:1; }
+
+/* =========================================
+   WAITING PAGE
+   ========================================= */
+.wait-page {
+  min-height:100vh; display:flex; align-items:center; justify-content:center;
+  padding:20px; background:var(--bg);
+}
+.wait-card {
+  text-align:center; padding:52px 38px;
+  background:var(--card); border:1px solid var(--border);
+  border-radius:24px; max-width:400px; width:100%;
+  box-shadow:var(--shadowlg); animation:slideUp .45s ease;
+}
+.wait-icon { font-size:80px; display:block; margin-bottom:20px; animation:pulse 2.5s ease infinite; }
+
+/* =========================================
+   CHART
+   ========================================= */
+.bar-chart { display:flex; align-items:flex-end; gap:7px; height:110px; padding-top:20px; }
+.bar-w { flex:1; display:flex; flex-direction:column; align-items:center; gap:5px; }
+.bar {
+  width:100%; border-radius:6px 6px 0 0; min-height:4px;
+  background:var(--accent);
+  transition:height .6s ease; position:relative; cursor:default;
+}
+.bar::after {
+  content:attr(data-v); position:absolute; top:-18px; left:50%;
+  transform:translateX(-50%); font-size:10px; color:var(--text2);
+  white-space:nowrap; opacity:0; transition:opacity .15s;
+}
+.bar:hover::after { opacity:1; }
+.bar-lbl { font-size:10px; color:var(--text3); font-weight:600; }
+
+/* =========================================
+   CHAT v2 — WhatsApp-Style
+   ========================================= */
+.chat-wrap {
+  display:flex; border:1px solid var(--border); border-radius:16px;
+  overflow:hidden; background:var(--card);
+  height:calc(100dvh - 138px); min-height:480px;
+}
+
+/* LEFT panel — contact list */
+.chat-left {
+  width:290px; flex-shrink:0; border-right:1px solid var(--border);
+  display:flex; flex-direction:column; background:var(--bg2);
+  transition:transform .25s cubic-bezier(.4,0,.2,1);
+}
+.chat-left-head { padding:14px 13px 10px; border-bottom:1px solid var(--border); flex-shrink:0; }
+.chat-left-title { font-size:15px; font-weight:800; margin-bottom:9px; }
+.chat-search-wrap { position:relative; }
+.chat-search-ic  { position:absolute; left:11px; top:50%; transform:translateY(-50%); font-size:12px; color:var(--text3); pointer-events:none; }
+.chat-search-inp {
+  width:100%; background:var(--bg3); border:1.5px solid var(--border);
+  border-radius:10px; padding:8px 11px 8px 32px;
+  font-size:13px; color:var(--text); outline:none; font-family:inherit;
+  transition:border-color .18s;
+}
+.chat-search-inp:focus { border-color:var(--accent); }
+.chat-contacts { flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; }
+
+/* Contact row */
+.chat-contact {
+  display:flex; align-items:center; gap:11px; padding:12px 13px;
+  cursor:pointer; border-bottom:1px solid var(--border);
+  transition:background .15s; min-height:66px;
+}
+.chat-contact:hover    { background:var(--bg3); }
+.chat-contact.active   { background:rgba(34,197,94,.08); border-left:3px solid var(--accent); }
+[data-theme="light"] .chat-contact.active { background:rgba(29,78,216,.06); border-left-color:var(--accent); }
+.chat-contact.has-unread { background:rgba(34,197,94,.03); }
+
+/* Avatar with online ring */
+.chat-av {
+  width:46px; height:46px; border-radius:50%; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center;
+  font-size:18px; font-weight:800; overflow:hidden; position:relative;
+  background:linear-gradient(135deg,var(--accent),var(--accent2)); color:#fff;
+}
+.chat-av img { width:100%; height:100%; object-fit:cover; }
+.online-ring { position:absolute; bottom:1px; right:1px; width:12px; height:12px; border-radius:50%; border:2px solid var(--bg2); }
+.online-ring.on  { background:#22c55e; }
+.online-ring.off { background:var(--text3); }
+
+/* Contact info */
+.chat-ci { flex:1; min-width:0; }
+.chat-ci-top { display:flex; justify-content:space-between; align-items:center; margin-bottom:3px; }
+.chat-ci-name { font-size:13.5px; font-weight:700; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:150px; }
+.chat-ci-time { font-size:10.5px; color:var(--text3); flex-shrink:0; margin-left:4px; }
+.chat-ci-preview { font-size:12px; color:var(--text2); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.chat-unread-pill {
+  background:var(--accent); color:#fff; font-size:10px; font-weight:800;
+  min-width:20px; height:20px; border-radius:10px; padding:0 5px;
+  display:flex; align-items:center; justify-content:center; flex-shrink:0;
+}
+
+/* RIGHT panel — chat window */
+.chat-right { flex:1; min-width:0; display:flex; flex-direction:column; background:var(--bg); }
+.chat-right-empty { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; color:var(--text3); gap:10px; font-size:14px; }
+
+/* Chat header */
+.chat-hdr { display:flex; align-items:center; gap:10px; padding:11px 15px; border-bottom:1px solid var(--border); background:var(--card); flex-shrink:0; }
+.chat-hdr-av { width:40px; height:40px; border-radius:50%; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:800; overflow:hidden; background:linear-gradient(135deg,var(--accent),var(--accent2)); color:#fff; }
+.chat-hdr-av img { width:100%; height:100%; object-fit:cover; }
+.chat-hdr-name { font-size:14px; font-weight:800; line-height:1.2; }
+.chat-hdr-status { font-size:11.5px; margin-top:2px; }
+.chat-hdr-status.on  { color:#22c55e; }
+.chat-hdr-status.off { color:var(--text3); }
+.chat-hdr-back { width:36px; height:36px; border-radius:9px; background:var(--bg3); border:none; cursor:pointer; display:none; align-items:center; justify-content:center; font-size:17px; flex-shrink:0; transition:background .15s; }
+.chat-hdr-back:hover { background:var(--border2); }
+
+/* Messages area */
+.chat-msgs { flex:1; overflow-y:auto; padding:14px 14px 8px; display:flex; flex-direction:column; gap:5px; -webkit-overflow-scrolling:touch; }
+.chat-msg { max-width:68%; display:flex; flex-direction:column; }
+@keyframes msgPop { from{opacity:0;transform:translateY(6px)scale(.97)}to{opacity:1;transform:translateY(0)scale(1)} }
+.chat-msg.new  { animation:msgPop .2s ease; }
+.chat-msg.me   { align-self:flex-end; align-items:flex-end; }
+.chat-msg.them { align-self:flex-start; align-items:flex-start; }
+.chat-bubble { padding:9px 13px; border-radius:18px; font-size:13.5px; line-height:1.55; word-break:break-word; }
+.chat-msg.me   .chat-bubble { background:linear-gradient(135deg,var(--accent),var(--accent2)); color:#fff; border-bottom-right-radius:4px; }
+.chat-msg.them .chat-bubble { background:var(--card); border:1px solid var(--border); color:var(--text); border-bottom-left-radius:4px; }
+.chat-meta { display:flex; align-items:center; gap:3px; margin-top:3px; padding:0 2px; }
+.chat-ts   { font-size:10.5px; color:var(--text3); }
+/* Tick marks — WhatsApp style */
+.tick { font-size:12px; font-weight:700; line-height:1; }
+.tick.t-sent { color:var(--text3); }
+.tick.t-read { color:var(--text3); }
+.tick.t-seen { color:#60a5fa; }
+
+/* Input area */
+.chat-input-area { padding:10px 12px; border-top:1px solid var(--border); background:var(--card); display:flex; gap:8px; align-items:center; flex-shrink:0; }
+.chat-inp { flex:1; background:var(--bg3); border:1.5px solid var(--border); border-radius:22px; padding:10px 16px; color:var(--text); font-size:13.5px; outline:none; transition:border-color .18s; font-family:inherit; }
+.chat-inp:focus { border-color:var(--accent); }
+.chat-send-btn { width:42px; height:42px; border-radius:50%; background:var(--accent); border:none; color:#fff; font-size:18px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all .18s; flex-shrink:0; }
+.chat-send-btn:hover  { transform:scale(1.08); filter:brightness(1.1); }
+.chat-send-btn:active { transform:scale(.94); }
+
+/* Mobile overrides */
+@media(max-width:768px){
+  .chat-wrap { flex-direction:column; height:calc(100dvh - 90px); border-radius:12px; }
+  .chat-left  { width:100%; border-right:none; border-bottom:1px solid var(--border); }
+  .chat-left.mob-hidden  { display:none; }
+  .chat-right.mob-hidden { display:none; }
+  .chat-hdr-back { display:flex; }
+  .chat-msg { max-width:80%; }
+}
+@media(max-width:480px){
+  .chat-msgs { padding:10px 10px 6px; }
+  .chat-input-area { padding:8px 10px; }
+  .chat-bubble { font-size:13px; padding:8px 11px; }
+}
+
+/* =========================================
+   ANNOUNCEMENTS
+   ========================================= */
+.ann-card {
+  background:var(--card); border:1.5px solid var(--border);
+  border-radius:14px; overflow:hidden;
+  transition:all .22s cubic-bezier(.4,0,.2,1); margin-bottom:14px;
+}
+.ann-card:hover { border-color:var(--accent); box-shadow:var(--glow); transform:translateY(-2px); }
+.ann-img  { width:100%; max-height:220px; object-fit:cover; display:block; }
+.ann-body { padding:16px; }
+.ann-title { font-size:15px; font-weight:800; margin-bottom:6px; }
+.ann-desc  { font-size:13px; color:var(--text2); line-height:1.65; margin-bottom:10px; white-space:pre-wrap; }
+.ann-footer { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:6px; }
+.ann-meta   { font-size:11.5px; color:var(--text3); display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+.ann-batch-tag { display:inline-flex; align-items:center; gap:4px; padding:3px 9px; border-radius:20px; font-size:11px; font-weight:700; background:rgba(34,197,94,.1); color:var(--accent); border:1px solid rgba(34,197,94,.2); }
+[data-theme="light"] .ann-batch-tag { background:rgba(29,78,216,.07); color:var(--accent); border-color:rgba(29,78,216,.15); }
+
+/* =========================================
+   NOTIFICATIONS
+   ========================================= */
+.notif {
+  display:flex; gap:11px; padding:13px; border:1px solid var(--border);
+  border-radius:11px; margin-bottom:8px; background:var(--card2); transition:all .18s;
+}
+.notif.unread { border-left:3px solid var(--accent); background:rgba(59,130,246,.04); }
+.notif-ic { font-size:22px; flex-shrink:0; }
+.notif-t  { font-size:13px; font-weight:700; margin-bottom:3px; }
+.notif-m  { font-size:12px; color:var(--text2); margin-bottom:4px; }
+.notif-tm { font-size:11px; color:var(--text3); }
+
+/* EMPTY */
+.empty { text-align:center; padding:38px 16px; }
+.empty-ic { font-size:46px; display:block; margin-bottom:11px; opacity:.65; }
+.empty p  { color:var(--text2); font-size:13px; line-height:1.55; }
+.empty a  { color:var(--accent); cursor:pointer; }
+
+/* SIDEBAR OVERLAY */
+.sb-ov { display:none; position:fixed; inset:0; background:rgba(0,0,0,.52); z-index:150; }
+
+/* =========================================
+   ANIMATIONS
+   ========================================= */
+@keyframes slideUp  { from{transform:translateY(22px);opacity:0}to{transform:translateY(0);opacity:1} }
+@keyframes fadeIn   { from{opacity:0}to{opacity:1} }
+@keyframes toastIn  { from{transform:translateX(36px);opacity:0}to{transform:translateX(0);opacity:1} }
+@keyframes pulse    { 0%,100%{transform:scale(1)}50%{transform:scale(1.07)} }
+@keyframes spin     { from{transform:rotate(0)}to{transform:rotate(360deg)} }
+@keyframes blink    { 0%,100%{opacity:1}50%{opacity:.4} }
+@keyframes shimmer  {
+  0%{background-position:-200% 0}100%{background-position:200% 0}
+}
+
+/* =========================================
+   RESPONSIVE
+   ========================================= */
+@media(max-width:920px){ .g4{grid-template-columns:repeat(2,1fr);} }
+@media(max-width:768px){
+  :root{ --sidebar:260px; }
+  .sidebar{ transform:translateX(-100%); }
+  .sidebar.open{ transform:translateX(0); }
+  .sb-ov.show{ display:block; }
+  .main{ margin-left:0 !important; }
+  .hamburger{ display:flex; }
+  .g2,.g3,.g4{ grid-template-columns:1fr; }
+  .pw{ padding:14px; }
+  .topbar{ padding:11px 14px; }
+  .timer-display{ font-size:48px; }
+}
+@media(max-width:480px){
+  .auth-card{ padding:26px 18px; }
+  .ci-acts{ flex-wrap:wrap; }
+  .m-actions{ flex-direction:column; }
+}
+
+/* ── Loading Spinner ── */
+.spinner{width:40px;height:40px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;margin:60px auto;}
+.page-loading{display:flex;flex-direction:column;align-items:center;gap:14px;padding:60px 20px;color:var(--text2);font-size:13px;}
+/* ── Upload Progress ── */
+.upload-bar{background:var(--bg3);border-radius:20px;height:8px;overflow:hidden;margin-top:8px;}
+.upload-fill{height:100%;border-radius:20px;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width .3s;}
+/* ── Realtime dot ── */
+.rt-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--success);animation:pulse 2s ease infinite;margin-right:4px;}
+.rt-dot.off{background:var(--danger);animation:none;}
+/* ── SQL box ── */
+.sql-box{background:var(--bg);border:1px solid var(--border2);border-radius:10px;padding:14px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent3);max-height:300px;overflow-y:auto;white-space:pre;line-height:1.6;tab-size:2;}
+/* ── Upload tabs ── */
+.upload-tabs{display:flex;gap:3px;background:var(--bg3);padding:3px;border-radius:9px;margin-bottom:12px;}
+.upload-tab{flex:1;padding:7px;text-align:center;border-radius:7px;cursor:pointer;font-size:12px;font-weight:700;color:var(--text2);transition:all .18s;}
+.upload-tab.on{background:var(--card);color:var(--text);}
+.dropzone{border:2px dashed var(--border2);border-radius:11px;padding:26px;text-align:center;cursor:pointer;transition:all .2s;color:var(--text2);font-size:13px;}
+.dropzone:hover,.dropzone.drag{border-color:var(--accent);background:rgba(59,130,246,.05);color:var(--accent);}
+.dropzone input{display:none;}
+
+/* ── Passkey / WebAuthn ── */
+.pk-btn {
+  width:100%; padding:14px; border-radius:12px;
+  border:1.5px solid var(--accent); cursor:pointer; font-size:14px; font-weight:700;
+  font-family:inherit; transition:all .22s;
+  display:flex; align-items:center; justify-content:center; gap:10px;
+  background:rgba(34,197,94,.07);
+  color:var(--accent);
+  box-shadow:0 2px 12px rgba(34,197,94,.1);
+}
+[data-theme="light"] .pk-btn {
+  background:rgba(29,78,216,.06);
+  color:var(--accent);
+  border-color:var(--accent);
+  box-shadow:0 2px 12px rgba(29,78,216,.08);
+}
+.pk-btn:hover { transform:translateY(-1px); box-shadow:0 6px 22px rgba(34,197,94,.2); background:rgba(34,197,94,.13); }
+[data-theme="light"] .pk-btn:hover { box-shadow:0 6px 22px rgba(29,78,216,.15); background:rgba(29,78,216,.1); }
+.pk-btn:active { transform:translateY(0); }
+.pk-btn:disabled { opacity:.5; cursor:not-allowed; transform:none; }
+.pk-icon { font-size:22px; }
+.pk-badge {
+  display:inline-flex; align-items:center; gap:6px;
+  padding:5px 12px; border-radius:20px; font-size:12px; font-weight:700;
+  background:rgba(34,197,94,.12); color:var(--success); border:1px solid rgba(34,197,94,.2);
+}
+[data-theme="light"] .pk-badge {
+  background:rgba(22,163,74,.1); color:var(--success); border-color:rgba(22,163,74,.2);
+}
+.pk-badge.unregistered {
+  background:rgba(245,158,11,.1); color:var(--warning); border-color:rgba(245,158,11,.2);
+}
+.pk-status-card {
+  padding:16px; border-radius:12px; border:1px solid var(--border);
+  background:var(--card2); display:flex; align-items:center; gap:14px;
+  margin-bottom:14px;
+}
+.pk-icon-wrap {
+  width:52px; height:52px; border-radius:14px; flex-shrink:0;
+  background:rgba(34,197,94,.1);
+  display:flex; align-items:center; justify-content:center; font-size:26px;
+}
+[data-theme="light"] .pk-icon-wrap { background:rgba(29,78,216,.08); }
+.pk-scanning {
+  display:flex; flex-direction:column; align-items:center; gap:12px;
+  padding:28px; text-align:center;
+}
+.pk-fingerprint-anim {
+  width:80px; height:80px; border-radius:50%;
+  background:rgba(34,197,94,.1);
+  display:flex; align-items:center; justify-content:center;
+  font-size:40px; animation:fpscan 1.8s ease-in-out infinite;
+  border:2px solid var(--accent); box-shadow:0 0 0 0 rgba(34,197,94,.4);
+}
+[data-theme="light"] .pk-fingerprint-anim {
+  background:rgba(29,78,216,.08);
+  box-shadow:0 0 0 0 rgba(29,78,216,.4);
+}
+@keyframes fpscan {
+  0%   { box-shadow:0 0 0 0 rgba(34,197,94,.5); }
+  50%  { box-shadow:0 0 0 18px rgba(34,197,94,0); }
+  100% { box-shadow:0 0 0 0 rgba(34,197,94,0); }
+}
+[data-theme="light"] .pk-fingerprint-anim { animation:fpscanLight 1.8s ease-in-out infinite; }
+@keyframes fpscanLight {
+  0%   { box-shadow:0 0 0 0 rgba(29,78,216,.4); }
+  50%  { box-shadow:0 0 0 18px rgba(29,78,216,0); }
+  100% { box-shadow:0 0 0 0 rgba(29,78,216,0); }
+}
+</style>
+</head>
+<body>
+<!-- MODAL -->
+<div class="modal-ov" id="modalOv" onclick="closeModalOv(event)"><div class="modal" id="modalBox" onclick="event.stopPropagation()"></div></div>
+<!-- TOASTS -->
+<div class="toast-ctr" id="toastCtr"></div>
+<!-- SIDEBAR OVERLAY -->
+<div class="sb-ov" id="sbOv" onclick="closeSidebar()"></div>
+<!-- APP -->
+<div id="app"></div>
+<script>
+
+/* =====================================================
+   COPY & CONTENT PROTECTION
+===================================================== */
+// Disable right-click context menu
+document.addEventListener('contextmenu', e => e.preventDefault());
+
+// Disable text copy / cut
+document.addEventListener('copy',  e => e.preventDefault());
+document.addEventListener('cut',   e => e.preventDefault());
+
+// Disable keyboard shortcuts: Ctrl+C, Ctrl+U, Ctrl+S, Ctrl+A, F12, Ctrl+Shift+I/J/C
+document.addEventListener('keydown', e => {
+  const ctrl = e.ctrlKey || e.metaKey;
+  if(ctrl && ['c','u','s','a','p'].includes(e.key.toLowerCase())) { e.preventDefault(); return false; }
+  if(ctrl && e.shiftKey && ['i','j','c','k'].includes(e.key.toLowerCase())) { e.preventDefault(); return false; }
+  if(e.key === 'F12') { e.preventDefault(); return false; }
+  if(ctrl && e.key.toLowerCase() === 'c') { e.preventDefault(); return false; }
+});
+
+// Disable drag-start on all elements (prevents drag-copy)
+document.addEventListener('dragstart', e => e.preventDefault());
+
+// Disable print (Ctrl+P)
+window.addEventListener('beforeprint', e => e.preventDefault());
+
+/* =====================================================
+   SUPABASE CONFIG
+===================================================== */
+const SUPABASE_URL = 'https://xjjnszjsmalnhbjcbtxm.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_Yi7JP5U0gjewhPpgRdhO1A_eCOqI3Hx';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+  realtime: { params: { eventsPerSecond: 10 } }
+});
+
+const ADMIN_EMAIL = 'sharmatushya7@gmail.com';
+const ADMIN_PASS  = 'A1S2D3F4';
+const BUCKET = 'freestudy';
+
+/* =====================================================
+   STATE
+===================================================== */
+const S = {
+  user: null,
+  page: 'login',
+  sub:  'dashboard',
+  dark: true,
+  batch: null, subject: null, chapter: null,
+  cTab: 'notes',
+  chatWith: null,
+  msgSearch: '',        // chat search query
+  chatPeers: [],        // cached peer list
+  presenceInterval: null, // online-ping timer
+  timerInterval: null, timerSecs: 0, timerOn: false,
+  unreadNotifs: 0, unreadMsgs: 0,
+  rtChannels: [],
+  uploadMode: 'link',  // 'link' | 'file'
+};
+
+/* =====================================================
+   UTILS
+===================================================== */
+function uid()   { return Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
+function today() { return new Date().toISOString().split('T')[0]; }
+function fmtD(ts){ return new Date(ts).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}); }
+function fmtT(ts){ return new Date(ts).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}); }
+function esc(s)  { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function fmtSec(s){ const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),ss=s%60; return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(ss).padStart(2,'0')}`; }
+function lsGet(k)  { try{ return JSON.parse(localStorage.getItem(k)); }catch{ return null; } }
+function lsSet(k,v){ localStorage.setItem(k, JSON.stringify(v)); }
+function now()   { return Date.now(); }
+
+function getDLIcon(label){
+  const l=(label||'').toLowerCase();
+  if(l.includes('drive'))    return '📁';
+  if(l.includes('dropbox'))  return '📦';
+  if(l.includes('onedrive')) return '☁️';
+  if(l.includes('telegram')) return '✈️';
+  if(l.includes('mega'))     return '🔷';
+  if(l.includes('mediafire'))return '🔥';
+  return '🔗';
+}
+function getYTEmbed(url){
+  const m=url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/))([a-zA-Z0-9_-]{11})/);
+  return m?`https://www.youtube.com/embed/${m[1]}`:url;
+}
+
+/* =====================================================
+   TOAST
+===================================================== */
+function toast(msg,type='info'){
+  const ic={success:'✅',error:'❌',warning:'⚠️',info:'ℹ️'};
+  const el=document.createElement('div');
+  el.className=`toast t-${type==='success'?'ok':type==='error'?'err':type==='warning'?'wrn':''}`;
+  el.innerHTML=`<span>${ic[type]||'ℹ️'}</span><span>${esc(msg)}</span>`;
+  document.getElementById('toastCtr').appendChild(el);
+  setTimeout(()=>{el.style.opacity='0';el.style.transform='translateX(30px)';el.style.transition='all .3s';setTimeout(()=>el.remove(),320);},3200);
+}
+
+/* =====================================================
+   MODAL
+===================================================== */
+function openModal(html){
+  document.getElementById('modalBox').innerHTML=html;
+  document.getElementById('modalOv').classList.add('show');
+}
+function closeModal(){ document.getElementById('modalOv').classList.remove('show'); }
+function closeModalOv(e){ if(e.target===document.getElementById('modalOv'))closeModal(); }
+
+/* ── Inline Confirm Dialog (replaces browser confirm()) ── */
+let _confirmCb = null;
+function showConfirm(msg, icon, cb, confirmLabel, confirmClass){
+  _confirmCb = cb;
+  const lbl  = confirmLabel  || 'Confirm';
+  const cls  = confirmClass  || 'btn-del';
+  const ic   = icon          || '⚠️';
+  openModal(`
+  <div class="mh"><h3>${ic} Are you sure?</h3><button class="mc-btn" onclick="closeModal()">✕</button></div>
+  <p style="color:var(--text2);font-size:14px;line-height:1.6;margin-bottom:4px">${msg}</p>
+  <div class="m-actions">
+    <button class="btn btn-sec" onclick="closeModal()">Cancel</button>
+    <button class="btn ${cls}" onclick="closeModal();if(_confirmCb){_confirmCb();}">${lbl}</button>
+  </div>`);
+}
+
+/* =====================================================
+   SIDEBAR / THEME
+===================================================== */
+function toggleSidebar(){ document.getElementById('sidebar')?.classList.toggle('open'); document.getElementById('sbOv')?.classList.toggle('show'); }
+function closeSidebar()  { document.getElementById('sidebar')?.classList.remove('open'); document.getElementById('sbOv')?.classList.remove('show'); }
+function toggleTheme(){ S.dark=!S.dark; document.documentElement.setAttribute('data-theme',S.dark?'dark':'light'); lsSet('fs_theme',S.dark); renderShell(); }
+function loadTheme(){ const t=lsGet('fs_theme'); S.dark=(t===null)?true:t; document.documentElement.setAttribute('data-theme',S.dark?'dark':'light'); }
+
+/* =====================================================
+   DB LAYER  (all async — wraps Supabase)
+===================================================== */
+async function dbUsers()   { const {data}=await sb.from('profiles').select('*').order('created_at'); return data||[]; }
+async function dbBatches() { const {data}=await sb.from('batches').select('*').order('created_at'); return data||[]; }
+async function dbSubjs(batchId){ const q=sb.from('subjects').select('*'); const {data}=batchId?await q.eq('batch_id',batchId):await q; return data||[]; }
+async function dbChaps(subjectId){ const q=sb.from('chapters').select('*'); const {data}=subjectId?await q.eq('subject_id',subjectId):await q; return data||[]; }
+async function dbContent(chapterId){ const q=sb.from('content').select('*'); const {data}=chapterId?await q.eq('chapter_id',chapterId):await q; return data||[]; }
+async function dbAttend(userId){ const q=sb.from('attendance').select('*').order('ts'); const {data}=userId?await q.eq('user_id',userId):await q; return data||[]; }
+async function dbMsgs(uid1,uid2){
+  const {data}=await sb.from('messages').select('*')
+    .or(`and(sender_id.eq.${uid1},receiver_id.eq.${uid2}),and(sender_id.eq.${uid2},receiver_id.eq.${uid1})`)
+    .order('created_at'); return data||[];
+}
+async function dbAnnouncements(batchIds){
+  if(!batchIds||!batchIds.length) return [];
+  const {data}=await sb.from('announcements').select('*')
+    .in('batch_id',batchIds).order('created_at',{ascending:false});
+  return data||[];
+}
+async function dbNotifs(userId){
+  const {data}=await sb.from('notifications').select('*').eq('user_id',userId).order('ts',{ascending:false}); return data||[];
+}
+async function dbLogs(){ const {data}=await sb.from('logs').select('*').order('ts',{ascending:false}).limit(200); return data||[]; }
+async function dbBmarks(userId){ const {data}=await sb.from('bookmarks').select('*').eq('user_id',userId); return data||[]; }
+async function dbSHours(userId){ const {data}=await sb.from('study_hours').select('*').eq('user_id',userId); return data||[]; }
+async function dbUnreadNotifs(userId){ const {count}=await sb.from('notifications').select('*',{count:'exact',head:true}).eq('user_id',userId).eq('read',false); return count||0; }
+async function dbUnreadMsgs(userId){ const {count}=await sb.from('messages').select('*',{count:'exact',head:true}).eq('receiver_id',userId).eq('is_read',false); return count||0; }
+
+async function addLog(action){
+  await sb.from('logs').insert({id:uid(),action,ts:now()});
+}
+async function pushNotif(userId,title,msg){
+  await sb.from('notifications').insert({id:uid(),user_id:userId,title,msg,read:false,ts:now()});
+}
+
+/* =====================================================
+   FILE UPLOAD (Supabase Storage)
+===================================================== */
+async function uploadFile(file, onProgress){
+  const path=`uploads/${S.user.id}/${Date.now()}_${file.name.replace(/[^a-zA-Z0-9._-]/g,'_')}`;
+  if(onProgress) onProgress(10);
+  const {data,error}=await sb.storage.from(BUCKET).upload(path,file,{cacheControl:'3600',upsert:false});
+  if(error) throw error;
+  if(onProgress) onProgress(90);
+  const {data:{publicUrl}}=sb.storage.from(BUCKET).getPublicUrl(path);
+  if(onProgress) onProgress(100);
+  return publicUrl;
+}
+
+/* =====================================================
+   AUTH
+===================================================== */
+async function doLogin(){
+  const email=(document.getElementById('li_email')?.value||'').trim();
+  const pw=document.getElementById('li_pw')?.value||'';
+  if(!email||!pw){toast('Please fill all fields','warning');return;}
+
+  // Admin bypass
+  if(email===ADMIN_EMAIL&&pw===ADMIN_PASS){
+    S.user={id:'admin',name:'Admin',email:ADMIN_EMAIL,role:'admin'};
+    lsSet('fs_admin_sess',S.user);
+    S.page='admin'; S.sub='dashboard';
+    await addLog('Admin logged in'); render(); return;
+  }
+
+  const btn=document.getElementById('loginBtn');
+  if(btn){btn.disabled=true;btn.textContent='Signing in…';}
+  try {
+    const {data,error}=await sb.auth.signInWithPassword({email,password:pw});
+    if(error) throw error;
+    const {data:profile,error:pe}=await sb.from('profiles').select('*').eq('id',data.user.id).single();
+    if(pe||!profile) throw new Error('Profile not found. Please contact admin.');
+    S.user=profile;
+    S.page=profile.role==='teacher'?(profile.approved?'teacher':'waiting'):'student';
+    S.sub='dashboard';
+    await addLog(`${profile.role} "${profile.name}" logged in`);
+    setupRealtime();
+    render();
+  } catch(err){
+    const msg=(err.message||'').toLowerCase();
+    if(msg.includes('email not confirmed')||msg.includes('not confirmed')){
+      if(btn){btn.disabled=false;btn.textContent='🚀 Sign In';}
+      showEmailNotConfirmedModal(email);
+      return;
+    }
+    toast(err.message||'Login failed','error');
+    if(btn){btn.disabled=false;btn.textContent='🚀 Sign In';}
+  }
+}
+
+
+function showEmailNotConfirmedModal(email){
+  openModal(
+    '<div class="mh"><h3>&#x1F4E7; Confirm Your Email</h3><button class="mc-btn" onclick="closeModal()">&#x2715;</button></div>' +
+    '<div style="text-align:center;padding:10px 0 18px">' +
+    '<div style="font-size:56px;margin-bottom:14px">&#x1F4EC;</div>' +
+    '<div style="font-weight:800;font-size:17px;margin-bottom:10px">Email Not Confirmed</div>' +
+    '<div style="color:var(--text2);font-size:13.5px;line-height:1.75;margin-bottom:20px">' +
+      'A confirmation link was sent to<br>' +
+      '<strong style="color:var(--accent)">' + esc(email) + '</strong><br><br>' +
+      'Click that link, then come back and sign in.<br>' +
+      '<span style="color:var(--text3);font-size:12px">(Check your Spam / Junk folder too)</span>' +
+    '</div>' +
+    '<button class="btn btn-p btn-full" style="margin-bottom:10px" id="resendBtn" onclick="resendConfirmEmail(\'' + esc(email) + '\')">' +
+      '&#x1F504; Resend Confirmation Email' +
+    '</button>' +
+    '<div style="padding:12px;background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.2);border-radius:10px;font-size:12.5px;color:var(--warning);text-align:left;line-height:1.6">' +
+      '<strong>&#x26A1; Instant fix:</strong> Supabase Dashboard &#x2192; Authentication &#x2192; Settings &#x2192; ' +
+      'turn <em>OFF</em> "Enable email confirmations" &#x2192; Save.' +
+    '</div></div>' +
+    '<button class="btn btn-sec btn-full" onclick="closeModal()">Close</button>'
+  );
+}
+
+async function resendConfirmEmail(email){
+  const btn=document.getElementById('resendBtn');
+  if(btn){btn.disabled=true;btn.textContent='Sending...';}
+  const {error}=await sb.auth.resend({type:'signup',email});
+  if(error){
+    toast('Could not resend: '+error.message,'error');
+    if(btn){btn.disabled=false;btn.textContent='&#x1F504; Resend Confirmation Email';}
+  } else {
+    toast('Confirmation email sent! Check your inbox','success');
+    closeModal();
+  }
+}
+
+async function doSignup(){
+  const name =(document.getElementById('su_name')?.value||'').trim();
+  const phone=(document.getElementById('su_phone')?.value||'').trim();
+  const email=(document.getElementById('su_email')?.value||'').trim();
+  const pw   =(document.getElementById('su_pw')?.value||'');
+  const role = document.getElementById('su_role')?.value||'student';
+  if(!name||!phone||!email||!pw){toast('Please fill all fields','warning');return;}
+  if(pw.length<6){toast('Password must be 6+ characters','warning');return;}
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){toast('Invalid email','warning');return;}
+  if(email===ADMIN_EMAIL){toast('Email not available','error');return;}
+
+  const btn=document.getElementById('signupBtn');
+  if(btn){btn.disabled=true;btn.textContent='Creating account…';}
+  try {
+    const {data,error}=await sb.auth.signUp({email,password:pw});
+    if(error) throw error;
+    const userId=data.user.id;
+    const {error:pe}=await sb.from('profiles').insert({id:userId,name,phone,email,role,approved:false,photo:'',created_at:now()});
+    if(pe) throw pe;
+    await addLog(`New ${role} registered: ${name}`);
+    // Try immediate login (succeeds when email confirmation is DISABLED)
+    const {data:sess,error:le}=await sb.auth.signInWithPassword({email,password:pw});
+    if(!le&&sess&&sess.user){
+      const {data:profile}=await sb.from('profiles').select('*').eq('id',sess.user.id).single();
+      if(profile){
+        S.user=profile;
+        S.page=profile.role==='teacher'?(profile.approved?'teacher':'waiting'):'student';
+        S.sub='dashboard'; setupRealtime();
+        toast('Welcome, '+name+'! Account created successfully!','success');
+        render(); return;
+      }
+    }
+    // Email confirmation required — show confirmation pending page
+    S._confirmEmail=email; S.page='confirm'; render();
+  } catch(err){
+    toast(err.message||'Signup failed','error');
+    if(btn){btn.disabled=false;btn.textContent='✨ Create Account';}
+  }
+}
+
+async function logout(){
+  if(S.timerInterval)    clearInterval(S.timerInterval);
+  if(S.presenceInterval) clearInterval(S.presenceInterval);
+  S.timerInterval=null; S.presenceInterval=null; S.timerOn=false; S.timerSecs=0;
+  teardownRealtime();
+  lsSet('fs_admin_sess',null);
+  if(S.user?.role!=='admin') await sb.auth.signOut();
+  S.user=null; S.page='login';
+  S.batch=null; S.subject=null; S.chapter=null;
+  render();
+}
+
+/* =====================================================
+   PASSKEY / WebAuthn IMPLEMENTATION
+   Uses real device biometrics (Face ID, Touch ID,
+   Windows Hello, Android fingerprint, etc.)
+===================================================== */
+
+/* ─── BUG FIX 1: Safe b64url — no spread operator (avoids stack overflow on large buffers) ─── */
+function b64url(buf){
+  const bytes = new Uint8Array(buf);
+  let str = '';
+  for(let i=0;i<bytes.length;i++) str += String.fromCharCode(bytes[i]);
+  return btoa(str).replace(/\+/g,'-').replace(/\//g,'_').replace(/=/g,'');
+}
+
+/* ─── BUG FIX 2: Safe fromB64url — wrapped in try/catch ─── */
+function fromB64url(str){
+  try {
+    str = str.replace(/-/g,'+').replace(/_/g,'/');
+    while(str.length % 4) str += '=';
+    return Uint8Array.from(atob(str), c => c.charCodeAt(0)).buffer;
+  } catch(e) {
+    throw new Error('Invalid credential ID format. Please re-register your passkey.');
+  }
+}
+
+/* ─── BUG FIX 3: rpId handles file:// and empty hostname ─── */
+function rpId(){
+  const h = location.hostname;
+  if(!h || h === '') return 'localhost';  // file:// protocol fix
+  return h === 'localhost' ? 'localhost' : h;
+}
+
+/* ─── Check if WebAuthn is available ─── */
+function webAuthnAvailable(){
+  return !!(window.PublicKeyCredential && navigator.credentials && location.protocol !== 'file:');
+}
+
+/* ─── REGISTER passkey ─── */
+async function registerPasskey(){
+  if(!webAuthnAvailable()){
+    toast('Biometric login requires HTTPS or localhost — not supported here','error'); return;
+  }
+  if(!S.user || S.user.role==='admin'){
+    toast('Please login first','warning'); return;
+  }
+
+  openModal(`
+    <div class="mh"><h3>👆 Register Passkey</h3><button class="mc-btn" onclick="closeModal()">✕</button></div>
+    <div class="pk-scanning">
+      <div class="pk-fingerprint-anim">👆</div>
+      <div style="font-weight:700;font-size:16px">Waiting for biometric…</div>
+      <div style="font-size:13px;color:var(--text2)">Use fingerprint, Face ID, or<br>device PIN when prompted</div>
+    </div>`);
+
+  try {
+    const challenge = crypto.getRandomValues(new Uint8Array(32)); // BUG FIX 4: 32 bytes (more secure than 16)
+    const userIdBuf = new TextEncoder().encode(S.user.id);
+
+    const cred = await navigator.credentials.create({ publicKey:{
+      challenge,
+      rp:{ id:rpId(), name:'FreeStudy' },
+      user:{ id:userIdBuf, name:S.user.email, displayName:S.user.name },
+      pubKeyCredParams:[
+        {type:'public-key', alg:-7},    // ES256
+        {type:'public-key', alg:-257},  // RS256
+      ],
+      authenticatorSelection:{
+        authenticatorAttachment:'platform',
+        userVerification:'required',
+        residentKey:'preferred',
+      },
+      timeout:60000,
+      attestation:'none',
+    }});
+
+    // BUG FIX 5: null check on cred
+    if(!cred) throw new Error('No credential returned by device. Please try again.');
+
+    const credId = b64url(cred.rawId);
+
+    // BUG FIX 6: onConflict:'id' (not 'user_id' — user_id has no UNIQUE constraint)
+    const {error} = await sb.from('passkeys').upsert({
+      id:           S.user.id + '_pk',   // deterministic primary key — one per user
+      user_id:      S.user.id,
+      credential_id: credId,
+      public_key:   b64url(cred.response.clientDataJSON),
+    }, { onConflict: 'id' });            // ← FIXED: was 'user_id' which has no UNIQUE constraint
+    if(error) throw new Error('Could not save passkey: ' + error.message);
+
+    // Update local cache
+    const stored = lsGet('fs_passkeys') || {};
+    stored[S.user.id] = credId;
+    lsSet('fs_passkeys', stored);
+
+    closeModal();
+    toast('Passkey registered! You can now login with biometrics 🎉','success');
+    render();
+
+  } catch(err){
+    closeModal();
+    if(err.name === 'NotAllowedError')       toast('Cancelled or timed out — please try again','warning');
+    else if(err.name === 'InvalidStateError') toast('A passkey is already registered. Use Re-register instead.','warning');
+    else if(err.name === 'NotSupportedError') toast('This device does not support biometric passkeys','error');
+    else                                      toast('Registration failed: ' + err.message, 'error');
+  }
+}
+
+/* ─── LOGIN with passkey — Step 1: Ask for email ─── */
+async function passkeyLogin(){
+  if(!webAuthnAvailable()){
+    toast('Biometric login requires HTTPS or localhost','error'); return;
+  }
+
+  openModal(`
+    <div class="mh">
+      <h3>👆 Passkey Login</h3>
+      <button class="mc-btn" onclick="closeModal()">✕</button>
+    </div>
+    <div style="padding:4px 0 8px">
+      <div style="text-align:center;font-size:36px;margin-bottom:10px">🔐</div>
+      <div style="font-weight:700;font-size:15px;margin-bottom:6px;text-align:center">Enter your Email</div>
+      <div style="font-size:13px;color:var(--text2);text-align:center;margin-bottom:18px">
+        We'll verify your registered passkey for this account
+      </div>
+      <div class="fg">
+        <label>Email Address</label>
+        <input class="fc" type="email" id="pkEmailInput" placeholder="you@example.com"
+          onkeydown="if(event.key==='Enter')passkeyLoginStep2()">
+      </div>
+      <div class="m-actions">
+        <button class="btn btn-sec" onclick="closeModal()">Cancel</button>
+        <button class="btn btn-p" id="pkContinueBtn" onclick="passkeyLoginStep2()">
+          👆 Continue with Passkey
+        </button>
+      </div>
+    </div>`);
+
+  setTimeout(() => { document.getElementById('pkEmailInput')?.focus(); }, 100);
+}
+
+/* ─── LOGIN with passkey — Step 2: Email verify → Biometric → DB confirm ─── */
+async function passkeyLoginStep2(){
+  const emailInput = document.getElementById('pkEmailInput');
+  const email = (emailInput?.value || '').trim().toLowerCase();
+  if(!email){ toast('Please enter your email','warning'); return; }
+
+  const btn = document.getElementById('pkContinueBtn');
+  if(btn){ btn.disabled=true; btn.textContent='🔍 Looking up…'; }
+
+  try {
+    // ── Step A: Find profile by email (profiles table is readable by anon) ──
+    const {data:profiles, error:profErr} = await sb.from('profiles')
+      .select('*').ilike('email', email).limit(1);
+
+    const profile = profiles?.[0];
+    if(profErr || !profile){
+      toast('No account found with this email','error');
+      if(btn){ btn.disabled=false; btn.textContent='👆 Continue with Passkey'; }
+      return;
+    }
+
+    // ── Step B: Build allowCredentials from localStorage cache (no DB query needed) ──
+    // This avoids RLS blocking on passkeys table for anon users
+    const stored   = lsGet('fs_passkeys') || {};
+    const cachedId = stored[profile.id];   // credentialId stored at registration time
+
+    let allowCredentials = undefined;  // undefined = discovery mode (browser shows any passkey)
+    if(cachedId){
+      try {
+        allowCredentials = [{
+          id:         fromB64url(cachedId),
+          type:       'public-key',
+          transports: ['internal', 'hybrid'],
+        }];
+      } catch(_){ allowCredentials = undefined; } // if corrupted, fall back to discovery
+    }
+
+    // ── Step C: Show biometric modal ──
+    openModal(`
+      <div class="mh">
+        <h3>👆 Verifying Identity</h3>
+        <button class="mc-btn" onclick="closeModal()">✕</button>
+      </div>
+      <div class="pk-scanning">
+        <div class="pk-fingerprint-anim">👆</div>
+        <div style="font-weight:700;font-size:16px">Scan your biometric</div>
+        <div style="font-size:13px;color:var(--text2);margin-top:6px">
+          Logging in as <strong style="color:var(--accent)">${esc(profile.name)}</strong><br>
+          Use the fingerprint / Face ID you registered
+        </div>
+      </div>`);
+
+    // ── Step D: Trigger device biometric ──
+    const challenge = crypto.getRandomValues(new Uint8Array(32));
+    const assertion = await navigator.credentials.get({ publicKey:{
+      challenge,
+      rpId:             rpId(),
+      userVerification: 'required',
+      allowCredentials,      // from cache OR undefined (discovery mode)
+      timeout:          60000,
+    }});
+
+    if(!assertion) throw new Error('No response from biometric sensor. Please try again.');
+
+    const returnedCredId = b64url(assertion.rawId);
+
+    // ── Step E: Verify credential belongs to this user ──
+    // First try localStorage (works even if anon RLS blocks DB)
+    let verified = false;
+
+    if(cachedId && returnedCredId === cachedId){
+      // ✅ LocalStorage match — credential confirmed
+      verified = true;
+    } else {
+      // No local cache or different device — verify via Supabase
+      const {data:pks} = await sb.from('passkeys')
+        .select('credential_id')
+        .eq('user_id', profile.id)
+        .eq('credential_id', returnedCredId)
+        .limit(1);
+
+      if(pks && pks.length > 0) verified = true;
+    }
+
+    if(!verified){
+      throw new Error('This passkey does not belong to the entered email account.');
+    }
+
+    // ── Step F: Update local cache with latest credId ──
+    stored[profile.id] = returnedCredId;
+    lsSet('fs_passkeys', stored);
+
+    // ── Step G: Login ──
+    closeModal();
+    S.user = profile;
+    S.page = profile.role==='teacher' ? (profile.approved ? 'teacher' : 'waiting') : 'student';
+    S.sub  = 'dashboard';
+    setupRealtime();
+    await addLog(`${profile.role} "${profile.name}" logged in via passkey`);
+    toast('Welcome back, ' + profile.name + ' 🎉','success');
+    render();
+
+  } catch(err){
+    closeModal();
+    if(err.name === 'NotAllowedError')    toast('Biometric cancelled or timed out','warning');
+    else if(err.name === 'SecurityError') toast('Security error — make sure you are on the correct URL','error');
+    else                                  toast(err.message || 'Passkey login failed','error');
+  }
+}
+
+/* ─── Check if current user has passkey registered ─── */
+async function userHasPasskey(userId){
+  const {data} = await sb.from('passkeys')
+    .select('id').eq('user_id', userId).limit(1);
+  return (data||[]).length > 0;
+}
+
+/* ─── BUG FIX: deletePasskey — with error handling + loading state ─── */
+async function deletePasskey(){
+  showConfirm('Remove your registered passkey? You will need to login with password next time.', '👆', async () => {
+    const delBtn = document.getElementById('pkDelBtn');
+    if(delBtn){ delBtn.disabled=true; delBtn.textContent='Removing…'; }
+    try {
+      const {error} = await sb.from('passkeys').delete().eq('user_id', S.user.id);
+      if(error) throw new Error(error.message);
+      const stored = lsGet('fs_passkeys') || {};
+      delete stored[S.user.id];
+      lsSet('fs_passkeys', stored);
+      toast('Passkey removed successfully','warning');
+      render();
+    } catch(err){
+      toast('Failed to remove passkey: ' + err.message, 'error');
+      if(delBtn){ delBtn.disabled=false; delBtn.textContent='🗑️ Remove Passkey'; }
+    }
+  }, '🗑️ Remove', 'btn-del');
+}
+
+/* Keep legacy aliases */
+function saveFP(){ registerPasskey(); }
+function fingerprintLogin(){ passkeyLogin(); }
+
+/* =====================================================
+   REAL-TIME SUBSCRIPTIONS
+===================================================== */
+function setupRealtime(){
+  if(!S.user||S.user.role==='admin') return;
+  teardownRealtime();
+
+  // 1. New messages to me
+  const msgCh=sb.channel('rt-msgs-'+S.user.id)
+    .on('postgres_changes',{event:'INSERT',schema:'public',table:'messages',filter:`receiver_id=eq.${S.user.id}`},
+      async(payload)=>{
+        S.unreadMsgs++;
+        updateBadges();
+        const m=payload.new;
+        toast(`💬 New message from ${m.sender_id==='admin'?'Admin':'someone'}`,'info');
+        if(S.sub==='chat'&&S.chatWith===m.sender_id){
+          appendChatMsg(m);
+          await markMsgsSeen(m.sender_id);
+          // Remove unread pill for this contact
+          const pill=document.querySelector(`.chat-contact[data-pid="${m.sender_id}"] .chat-unread-pill`);
+          if(pill) pill.remove();
+        }
+      })
+    .subscribe();
+
+  // 1b. Seen-receipt updates — update tick marks in real-time for sender
+  const seenCh=sb.channel('rt-seen-'+S.user.id)
+    .on('postgres_changes',{event:'UPDATE',schema:'public',table:'messages',filter:`sender_id=eq.${S.user.id}`},
+      (payload)=>{
+        const el=document.getElementById(`msg_${payload.new.id}`);
+        if(!el) return;
+        const tick=el.querySelector('.tick');
+        if(!tick) return;
+        if(payload.new.seen_at){ tick.className='tick t-seen'; tick.textContent='✓✓'; }
+        else if(payload.new.is_read){ tick.className='tick t-read'; tick.textContent='✓✓'; }
+      })
+    .subscribe();
+
+  // 2. New notifications for me
+  const notifCh=sb.channel('rt-notifs-'+S.user.id)
+    .on('postgres_changes',{event:'INSERT',schema:'public',table:'notifications',filter:`user_id=eq.${S.user.id}`},
+      (payload)=>{
+        S.unreadNotifs++;
+        updateBadges();
+        toast(`🔔 ${payload.new.title}`,'info');
+      })
+    .subscribe();
+
+  // 3. Content view counts (live update for teachers)
+  let contCh=null;
+  if(S.user.role==='teacher'){
+    contCh=sb.channel('rt-content')
+      .on('postgres_changes',{event:'UPDATE',schema:'public',table:'content'},
+        (payload)=>{
+          // Update view count in DOM if visible
+          const el=document.getElementById(`ci_${payload.new.id}`);
+          if(el){
+            const m=el.querySelector('.ci-meta');
+            if(m){
+              const v=payload.new.views||0;
+              m.innerHTML=`📅 ${fmtD(payload.new.ts)} &nbsp;·&nbsp; 👁️ ${v} unique view${v!==1?'s':''}`;
+            }
+          }
+        })
+      .subscribe();
+  }
+
+  S.rtChannels=[msgCh,seenCh,notifCh,contCh].filter(Boolean);
+}
+
+function teardownRealtime(){
+  S.rtChannels.forEach(ch=>{ try{ sb.removeChannel(ch); }catch{} });
+  S.rtChannels=[];
+}
+
+function appendChatMsg(m){
+  const box=document.getElementById('chatMsgs');
+  if(!box) return;
+  const uid2=S.user.id;
+  const div=document.createElement('div');
+  div.className=`chat-msg new ${(m.sender_id||m.from_id)===uid2?'me':'them'}`;
+  div.id=`msg_${m.id}`;
+  div.innerHTML=`
+    <div class="chat-bubble">${esc(m.message_text||m.text||'')}</div>
+    <div class="chat-meta">
+      <span class="chat-ts">${fmtT(m.created_at||m.ts)}</span>
+      ${getMsgTick(m,uid2)}
+    </div>`;
+  box.appendChild(div); box.scrollTop=box.scrollHeight;
+}
+
+async function updateBadges(){
+  const un=document.querySelectorAll('.unread-badge');
+  const total=S.unreadNotifs+S.unreadMsgs;
+  un.forEach(b=>{ b.textContent=total; b.style.display=total>0?'':'none'; });
+  // update topbar bell dot
+  const dot=document.querySelector('.tb-dot');
+  if(dot) dot.style.display=total>0?'':'none';
+}
+
+/* =====================================================
+   NAV CONFIGS
+===================================================== */
+function adminNav(){ return [
+  {id:'dashboard',icon:'📊',label:'Dashboard'},
+  {id:'approvals',icon:'✅',label:'Teacher Approvals'},
+  {id:'batchmon', icon:'📦',label:'Batch Monitor'},
+  {id:'attmon',   icon:'📅',label:'Attendance Monitor'},
+  {id:'users',    icon:'👥',label:'User Management'},
+  {id:'messages', icon:'💬',label:'Messages'},
+  {id:'logs',     icon:'📋',label:'Activity Logs'},
+  {id:'setup',    icon:'⚙️',label:'DB Setup'},
+  {id:'notifications',icon:'🔔',label:'Notifications'},
+];}
+function teacherNav(){ return [
+  {id:'dashboard',     icon:'📊',label:'Dashboard'},
+  {id:'batches',       icon:'📦',label:'My Batches'},
+  {id:'analytics',     icon:'📈',label:'Analytics'},
+  {id:'announcements', icon:'📢',label:'Announcements'},
+  {id:'chat',          icon:'💬',label:'Messages'},
+  {id:'notifications', icon:'🔔',label:'Notifications'},
+  {id:'profile',       icon:'👤',label:'Profile'},
+];}
+function studentNav(){ return [
+  {id:'dashboard',     icon:'📊',label:'Dashboard'},
+  {id:'batches',       icon:'🔍',label:'Browse Batches'},
+  {id:'mybatches',     icon:'🎯',label:'My Batches'},
+  {id:'attendance',    icon:'📅',label:'Attendance'},
+  {id:'announcements', icon:'📢',label:'Announcements'},
+  {id:'timer',         icon:'⏱️',label:'Study Timer'},
+  {id:'bookmarks',     icon:'🔖',label:'Bookmarks'},
+  {id:'chat',          icon:'💬',label:'Messages'},
+  {id:'notifications', icon:'🔔',label:'Notifications'},
+  {id:'profile',       icon:'👤',label:'Profile'},
+];}
+
+const PAGE_TITLES={
+  dashboard:'Dashboard',batches:'Batches',mybatches:'My Batches',
+  analytics:'Analytics',chat:'Messages',messages:'Messages',
+  announcements:'Announcements',notifications:'Notifications',
+  attendance:'Attendance',timer:'Study Timer',bookmarks:'Bookmarks',
+  profile:'My Profile',approvals:'Teacher Approvals',users:'User Management',
+  logs:'Activity Logs',batchmon:'Batch Monitor',attmon:'Attendance Monitor',
+  setup:'Database Setup',
+};
+
+/* =====================================================
+   ROUTER & LAYOUT
+===================================================== */
+function navTo(sub){
+  S.sub=sub; S.batch=null; S.subject=null; S.chapter=null;
+  S.chatWith=null; S.msgSearch='';
+  closeSidebar(); render();
+}
+
+function loadingHTML(){
+  return `<div class="page-loading"><div class="spinner"></div><span>Loading…</span></div>`;
+}
+
+function layout(role,navItems){
+  const u=S.user;
+  const total=S.unreadNotifs+S.unreadMsgs;
+  const avCont=u?.photo
+    ?`<img src="${esc(u.photo)}" alt="">`
+    :`<span style="font-weight:800">${(u?.name||'A').charAt(0).toUpperCase()}</span>`;
+  return `
+  <div class="app">
+    <nav class="sidebar" id="sidebar">
+      <div class="sb-head">
+        <div class="sb-brand">
+          <div class="sb-icon">📚</div>
+          <h2>FreeStudy</h2>
+        </div>
+        <div class="sb-role">${esc(role)} &nbsp;<span class="rt-dot" id="rtDot" title="Realtime connected"></span></div>
+      </div>
+      <div class="sb-user">
+        <div class="sb-av">${avCont}</div>
+        <div style="min-width:0">
+          <div class="sb-uname">${esc(u?.name||'User')}</div>
+          <div class="sb-uemail">${esc(u?.email||'')}</div>
+        </div>
+      </div>
+      <nav class="sb-nav">
+        ${navItems.map(n=>`
+          <div class="nav-item ${S.sub===n.id?'active':''}" onclick="navTo('${n.id}')">
+            <span class="ni-ic">${n.icon}</span>
+            <span>${n.label}</span>
+            ${(n.id==='notifications'||n.id==='chat')&&total>0?`<span class="nav-badge unread-badge">${total}</span>`:''}
+          </div>
+        `).join('')}
+      </nav>
+      <div class="sb-foot">
+        <div class="sb-action" onclick="toggleTheme()">
+          <span>${S.dark?'☀️':'🌙'}</span><span>${S.dark?'Light Mode':'Dark Mode'}</span>
+        </div>
+        ${(S.page==='student'||S.page==='teacher')?`<div class="sb-action" onclick="registerPasskey()"><span>👆</span><span>Register Passkey</span></div>`:''}
+        <div class="sb-action sb-logout" onclick="logout()"><span>🚪</span><span>Logout</span></div>
+      </div>
+    </nav>
+    <div class="main" id="main">
+      <div class="topbar">
+        <div class="tb-left">
+          <div class="tb-btn hamburger" onclick="toggleSidebar()">☰</div>
+          <div class="tb-title">${PAGE_TITLES[S.sub]||S.sub}</div>
+        </div>
+        <div class="tb-right">
+          <div class="tb-btn" onclick="navTo('notifications')" title="Notifications">
+            🔔${total>0?'<span class="tb-dot"></span>':''}
+          </div>
+          <div class="tb-btn" onclick="toggleTheme()">${S.dark?'☀️':'🌙'}</div>
+        </div>
+      </div>
+      <div class="pw" id="pw">${loadingHTML()}</div>
+    </div>
+  </div>`;
+}
+
+function renderShell(){
+  // Re-render just the sidebar/topbar badges without full page reload
+  const dot=document.getElementById('rtDot');
+  if(dot) dot.className=`rt-dot ${S.rtChannels.length?'':'off'}`;
+}
+
+async function render(){
+  const app=document.getElementById('app');
+  switch(S.page){
+    case 'login':   app.innerHTML=renderLogin();   return;
+    case 'signup':  app.innerHTML=renderSignup();  return;
+    case 'waiting': app.innerHTML=renderWaiting(); return;
+    case 'confirm': app.innerHTML=renderConfirm(); return;
+  }
+
+  // Determine role vars
+  let role='',navItems=[];
+  if(S.page==='admin'){role='Admin Panel';navItems=adminNav();}
+  else if(S.page==='teacher'){role='Teacher Panel';navItems=teacherNav();}
+  else {role='Student Panel';navItems=studentNav();}
+
+  // Refresh badge counts
+  if(S.user&&S.user.role!=='admin'){
+    S.unreadNotifs=await dbUnreadNotifs(S.user.id);
+    S.unreadMsgs=await dbUnreadMsgs(S.user.id);
+  }
+
+  app.innerHTML=layout(role,navItems);
+
+  try {
+    let html='';
+    if(S.page==='admin')        html=await renderAdminPage();
+    else if(S.page==='teacher') html=await renderTeacherPage();
+    else                        html=await renderStudentPage();
+    const pw=document.getElementById('pw');
+    if(pw){ pw.innerHTML=html; afterRender(); }
+  } catch(err){
+    console.error(err);
+    const pw=document.getElementById('pw');
+    if(pw) pw.innerHTML=`<div class="card card-p24" style="color:var(--danger)">
+      <strong>Error loading page:</strong><br><span style="font-size:13px">${esc(err.message)}</span>
+      <br><br><button class="btn btn-p btn-sm" onclick="render()">🔄 Retry</button>
+      <button class="btn btn-ghost btn-sm" onclick="navTo('setup')">⚙️ Check DB Setup</button>
+    </div>`;
+  }
+}
+
+function afterRender(){
+  // Scroll chat to bottom
+  setTimeout(()=>{ const c=document.getElementById('chatMsgs'); if(c)c.scrollTop=c.scrollHeight; },80);
+  // Re-run timer display if on timer page
+  if(S.sub==='timer'&&S.timerOn){
+    const d=document.getElementById('timerDisp'); if(d)d.textContent=fmtSec(S.timerSecs);
+  }
+  // Load passkey status on profile page
+  if(S.sub==='profile'&&S.user&&S.user.role!=='admin'){
+    loadPasskeyStatus();
+  }
+}
+
+async function loadPasskeyStatus(){
+  const statusEl = document.getElementById('pkStatus');
+  const badgeEl  = document.getElementById('pkBadge');
+  const delBtn   = document.getElementById('pkDelBtn');
+  const regBtn   = document.getElementById('pkRegBtn');
+  if(!statusEl) return;
+
+  if(!webAuthnAvailable()){
+    statusEl.textContent = 'WebAuthn not supported on this browser';
+    if(regBtn) regBtn.disabled = true;
+    return;
+  }
+
+  const has = await userHasPasskey(S.user.id);
+  if(has){
+    statusEl.textContent = 'Passkey registered on this account ✅';
+    if(badgeEl){ badgeEl.textContent='✅ Registered'; badgeEl.className='pk-badge'; }
+    if(delBtn)  delBtn.style.display='';
+    if(regBtn)  { regBtn.textContent='🔄 Re-register Passkey'; }
+  } else {
+    statusEl.textContent = 'No passkey yet. Register below to enable biometric login.';
+    if(badgeEl){ badgeEl.textContent='⚠️ Not set'; badgeEl.className='pk-badge unregistered'; }
+    if(delBtn)  delBtn.style.display='none';
+  }
+}
+
+/* =====================================================
+   AUTH PAGES
+===================================================== */
+function renderLogin(){ return `
+<div class="auth-page">
+  <div class="auth-orbs"></div>
+  <div class="auth-card">
+    <div class="auth-head">
+      <div class="auth-logo-box">📚</div>
+      <h1>FreeStudy</h1>
+      <p>Powered by <span style="color:#22c55e;font-weight:700">TushyaSharma</span></p>
+    </div>
+    <button class="pk-btn" onclick="passkeyLogin()">
+      <span class="pk-icon">👆</span>
+      <div style="text-align:left">
+        <div>Sign in with Passkey</div>
+        <div style="font-size:11px;opacity:.65;font-weight:500">Fingerprint · Face ID · Device PIN</div>
+      </div>
+    </button>
+    <div class="auth-divider">or sign in with email</div>
+    <div class="fg"><label>Email Address</label><input class="fc" type="email" id="li_email" placeholder="you@example.com" onkeydown="if(event.key==='Enter')doLogin()"></div>
+    <div class="fg"><label>Password</label><input class="fc" type="password" id="li_pw" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"></div>
+    <button class="btn btn-p btn-full btn-lg" style="margin-top:4px" id="loginBtn" onclick="doLogin()">🚀 Sign In</button>
+    <div class="auth-switch" style="margin-top:16px">No account? <span onclick="S.page='signup';render()">Create one →</span></div>
+  </div>
+</div>`; }
+
+function renderSignup(){ return `
+<div class="auth-page">
+  <div class="auth-orbs"></div>
+  <div class="auth-card">
+    <div class="auth-head">
+      <div class="auth-logo-box">✨</div>
+      <h1>Create Account</h1>
+      <p>Join FreeStudy today</p>
+    </div>
+    <div class="row2">
+      <div class="fg"><label>Full Name</label><input class="fc" type="text" id="su_name" placeholder="Your name"></div>
+      <div class="fg"><label>Phone</label><input class="fc" type="tel" id="su_phone" placeholder="+91…"></div>
+    </div>
+    <div class="fg"><label>Email</label><input class="fc" type="email" id="su_email" placeholder="you@example.com"></div>
+    <div class="fg"><label>Password</label><input class="fc" type="password" id="su_pw" placeholder="Min 6 characters"></div>
+    <div class="fg"><label>I am a</label>
+      <select class="fc" id="su_role">
+        <option value="student">👨‍🎓 Student</option>
+        <option value="teacher">👨‍🏫 Teacher</option>
+      </select>
+    </div>
+    <button class="btn btn-p btn-full btn-lg" style="margin-top:4px" id="signupBtn" onclick="doSignup()">✨ Create Account</button>
+    <div class="auth-switch" style="margin-top:16px">Have an account? <span onclick="S.page='login';render()">Sign in →</span></div>
+  </div>
+</div>`; }
+
+function renderWaiting(){ return `
+<div class="wait-page">
+  <div class="wait-card">
+    <span class="wait-icon">⏳</span>
+    <h2 style="font-size:22px;font-weight:800;margin-bottom:10px">Awaiting Admin Approval</h2>
+    <p style="color:var(--text2);font-size:14px;line-height:1.7;margin-bottom:24px">
+      Your teacher account is pending review. You will be notified once approved!
+    </p>
+    <span class="badge b-warn" style="padding:7px 18px;font-size:13px">⏳ Pending Review</span>
+    <br><br>
+    <button class="btn btn-sec btn-full" onclick="logout()">← Back to Login</button>
+  </div>
+</div>`; }
+
+function renderConfirm(){
+  const email=S._confirmEmail||'your email';
+  const body=
+    '<div class="wait-page"><div class="wait-card">' +
+    '<span class="wait-icon" style="font-size:72px">&#x1F4EC;</span>' +
+    '<h2 style="font-size:22px;font-weight:800;margin-bottom:10px">Check Your Email</h2>' +
+    '<p style="color:var(--text2);font-size:14px;line-height:1.75;margin-bottom:20px">' +
+      'A confirmation link was sent to<br>' +
+      '<strong style="color:var(--accent)">' + esc(email) + '</strong><br><br>' +
+      'Click that link, then come back and sign in.<br>' +
+      '<span style="font-size:12px;color:var(--text3)">(Check Spam / Junk folder too)</span>' +
+    '</p>' +
+    '<div style="padding:14px;background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.2);border-radius:11px;font-size:13px;color:var(--warning);text-align:left;line-height:1.65;margin-bottom:20px">' +
+      '<strong>&#x26A1; Skip this permanently:</strong><br>' +
+      'Supabase Dashboard &#x2192; <strong>Authentication &#x2192; Settings</strong> &#x2192; ' +
+      'turn <strong>OFF</strong> &quot;Enable email confirmations&quot; &#x2192; Save.' +
+    '</div>' +
+    '<button class="btn btn-p btn-full" style="margin-bottom:10px" onclick="resendConfirmEmail(\'' + esc(email) + '\')">' +
+      '&#x1F504; Resend Confirmation Email' +
+    '</button>' +
+    '<button class="btn btn-sec btn-full" onclick="S.page=\'login\';render()">&#x2190; Back to Login</button>' +
+    '</div></div>';
+  return body;
+}
+
+
+/* =====================================================
+   ── ADMIN PAGES ──
+===================================================== */
+async function renderAdminPage(){
+  switch(S.sub){
+    case 'approvals': return await adminApprovals();
+    case 'batchmon':  return await adminBatchMon();
+    case 'attmon':    return await adminAttMon();
+    case 'users':     return await adminUsers();
+    case 'messages':  return await renderChatList();
+    case 'logs':      return await adminLogs();
+    case 'setup':     return adminSetup();
+    case 'notifications': return await renderNotifs('admin');
+    default: return await adminDash();
+  }
+}
+
+async function adminDash(){
+  const [users,batches,content,logs]=await Promise.all([dbUsers(),dbBatches(),dbContent(),dbLogs()]);
+  const students=users.filter(u=>u.role==='student');
+  const teachers=users.filter(u=>u.role==='teacher');
+  const pending=teachers.filter(u=>!u.approved);
+  return `
+  <div class="g4" style="margin-bottom:18px">
+    <div class="stat"><div class="stat-ic ic-blue">👨‍🎓</div><div><div class="stat-val">${students.length}</div><div class="stat-lbl">Students</div></div></div>
+    <div class="stat"><div class="stat-ic ic-green">👨‍🏫</div><div><div class="stat-val">${teachers.length}</div><div class="stat-lbl">Teachers</div></div></div>
+    <div class="stat"><div class="stat-ic ic-yellow">⏳</div><div><div class="stat-val">${pending.length}</div><div class="stat-lbl">Pending Approvals</div></div></div>
+    <div class="stat"><div class="stat-ic ic-pink">📦</div><div><div class="stat-val">${batches.length}</div><div class="stat-lbl">Batches</div></div></div>
+  </div>
+  <div class="g2">
+    <div class="card card-p24">
+      <div class="sec-t">📊 Platform Stats</div>
+      ${[
+        ['Content Items',content.length,'📄'],
+        ['Approved Teachers',teachers.filter(t=>t.approved).length,'✅'],
+        ['Total Views',content.reduce((n,c)=>n+(c.views||0),0),'👁️'],
+        ['Total Subjects',(await dbSubjs()).length,'📖'],
+      ].map(([k,v,ic])=>`
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--border)">
+          <span style="color:var(--text2);font-size:13.5px">${ic} ${k}</span>
+          <strong style="font-size:15px">${v}</strong>
+        </div>
+      `).join('')}
+    </div>
+    <div class="card card-p24">
+      <div class="sec-t">⚡ Recent Activity</div>
+      ${logs.slice(0,8).map(l=>`
+        <div style="padding:8px 0;border-bottom:1px solid var(--border)">
+          <div style="font-size:13px">${esc(l.action)}</div>
+          <div style="font-size:11px;color:var(--text3);margin-top:2px">${fmtD(l.ts)}</div>
+        </div>
+      `).join('')||'<div class="empty"><span class="empty-ic">📭</span><p>No activity yet</p></div>'}
+    </div>
+  </div>`;
+}
+
+async function adminApprovals(){
+  const teachers=(await dbUsers()).filter(u=>u.role==='teacher');
+  return `
+  <div class="card card-p24">
+    <div class="sec-t">👨‍🏫 All Teachers</div>
+    <div class="tw"><table>
+      <thead><tr><th>Name</th><th>Email</th><th>Phone</th><th>Joined</th><th>Status</th><th>Actions</th></tr></thead>
+      <tbody>
+        ${teachers.length?teachers.map(t=>`
+          <tr>
+            <td><strong>${esc(t.name)}</strong></td>
+            <td>${esc(t.email)}</td>
+            <td>${esc(t.phone||'—')}</td>
+            <td>${fmtD(t.created_at)}</td>
+            <td><span class="badge ${t.approved?'b-ok':'b-warn'}">${t.approved?'✅ Active':'⏳ Pending'}</span></td>
+            <td style="display:flex;gap:5px;flex-wrap:wrap">
+              ${!t.approved?`<button class="btn btn-ok btn-xs" onclick="approveTeacher('${t.id}','${esc(t.name)}')">✅ Approve</button>`:''}
+              <button class="btn btn-del btn-xs" onclick="removeUser('${t.id}')">❌ Remove</button>
+            </td>
+          </tr>
+        `).join(''):`<tr><td colspan="6" style="text-align:center;padding:20px;color:var(--text2)">No teachers yet</td></tr>`}
+      </tbody>
+    </table></div>
+  </div>`;
+}
+async function approveTeacher(id,name){
+  const {error}=await sb.from('profiles').update({approved:true}).eq('id',id);
+  if(error){toast('Error: '+error.message,'error');return;}
+  await pushNotif(id,'🎉 Account Approved!',`Welcome ${name}! Your teacher account is now active.`);
+  await addLog(`Teacher "${name}" approved by admin`);
+  toast('Teacher approved! 🎉','success'); render();
+}
+async function removeUser(id){
+  showConfirm('Remove this user permanently? This cannot be undone.', '🗑️', async () => {
+    const {data:u}=await sb.from('profiles').select('name').eq('id',id).single();
+    await sb.from('profiles').delete().eq('id',id);
+    await addLog(`User "${u?.name}" removed by admin`);
+    toast('User removed','warning'); render();
+  }, '🗑️ Remove', 'btn-del');
+}
+
+async function adminBatchMon(){
+  const [batches,users,subjs,chaps,content]=await Promise.all([dbBatches(),dbUsers(),dbSubjs(),dbChaps(),dbContent()]);
+  return `
+  <div class="card card-p24">
+    <div class="sec-t">📦 All Batches</div>
+    <div class="tw"><table>
+      <thead><tr><th>Batch</th><th>Teacher</th><th>Students</th><th>Subjects</th><th>Content</th><th>Created</th></tr></thead>
+      <tbody>
+        ${batches.length?batches.map(b=>{
+          const t=users.find(u=>u.id===b.teacher_id);
+          const bSubs=subjs.filter(s=>s.batch_id===b.id);
+          const bChaps=chaps.filter(c=>bSubs.some(s=>s.id===c.subject_id));
+          const bCont=content.filter(c=>bChaps.some(ch=>ch.id===c.chapter_id));
+          return `<tr>
+            <td><strong>${esc(b.name)}</strong></td>
+            <td>${t?esc(t.name):'—'}</td>
+            <td><span class="badge b-blue">${(b.students||[]).length}</span></td>
+            <td>${bSubs.length}</td>
+            <td>${bCont.length}</td>
+            <td>${fmtD(b.created_at)}</td>
+          </tr>`;
+        }).join(''):`<tr><td colspan="6" style="text-align:center;padding:20px;color:var(--text2)">No batches yet</td></tr>`}
+      </tbody>
+    </table></div>
+  </div>`;
+}
+
+async function adminAttMon(){
+  const students=(await dbUsers()).filter(u=>u.role==='student');
+  const att=await dbAttend();
+  const now2=new Date();
+  const ym=`${now2.getFullYear()}-${String(now2.getMonth()+1).padStart(2,'0')}`;
+  return `
+  <div class="card card-p24">
+    <div class="sec-t">📅 Student Attendance</div>
+    <div class="tw"><table>
+      <thead><tr><th>Student</th><th>Email</th><th>Total Days</th><th>This Month</th><th>Last Marked</th></tr></thead>
+      <tbody>
+        ${students.length?students.map(s=>{
+          const mine=att.filter(a=>a.user_id===s.id);
+          const thisM=mine.filter(a=>a.date.startsWith(ym)).length;
+          const last=mine[mine.length-1];
+          return `<tr>
+            <td><strong>${esc(s.name)}</strong></td>
+            <td>${esc(s.email)}</td>
+            <td><span class="badge b-ok">${mine.length}</span></td>
+            <td><span class="badge b-blue">${thisM}</span></td>
+            <td>${last?fmtD(last.ts):'Never'}</td>
+          </tr>`;
+        }).join(''):`<tr><td colspan="5" style="text-align:center;padding:20px;color:var(--text2)">No students yet</td></tr>`}
+      </tbody>
+    </table></div>
+  </div>`;
+}
+
+async function adminUsers(){
+  const users=await dbUsers();
+  return `
+  <div class="card card-p24">
+    <div class="sec-t">👥 All Users</div>
+    <div class="search-row fg">
+      <span class="si">🔍</span>
+      <input class="fc" id="uQ" placeholder="Search…" oninput="filterAdminUsers(this.value)">
+    </div>
+    <div id="uTable">${renderUserTable(users)}</div>
+  </div>`;
+}
+function renderUserTable(users){
+  return `<div class="tw"><table>
+    <thead><tr><th>Name</th><th>Email</th><th>Phone</th><th>Role</th><th>Status</th><th>Joined</th><th>Action</th></tr></thead>
+    <tbody>
+      ${users.length?users.map(u=>`
+        <tr>
+          <td><strong>${esc(u.name)}</strong></td>
+          <td>${esc(u.email)}</td>
+          <td>${esc(u.phone||'—')}</td>
+          <td><span class="badge ${u.role==='teacher'?'b-purple':'b-cyan'}">${u.role==='teacher'?'👨‍🏫':'👨‍🎓'} ${u.role}</span></td>
+          <td>${u.role==='teacher'?`<span class="badge ${u.approved?'b-ok':'b-warn'}">${u.approved?'Active':'Pending'}</span>`:'<span class="badge b-ok">Active</span>'}</td>
+          <td>${fmtD(u.created_at)}</td>
+          <td><button class="btn btn-del btn-xs" onclick="removeUser('${u.id}')">🗑️</button></td>
+        </tr>
+      `).join(''):`<tr><td colspan="7" style="text-align:center;padding:20px;color:var(--text2)">No users</td></tr>`}
+    </tbody>
+  </table></div>`;
+}
+async function filterAdminUsers(q){
+  const users=(await dbUsers()).filter(u=>u.name.toLowerCase().includes(q.toLowerCase())||u.email.toLowerCase().includes(q.toLowerCase()));
+  const el=document.getElementById('uTable'); if(el)el.innerHTML=renderUserTable(users);
+}
+
+async function adminLogs(){
+  const logs=await dbLogs();
+  return `
+  <div class="card card-p24">
+    <div class="sec-t">📋 Activity Logs</div>
+    ${logs.length?`<div class="tw"><table>
+      <thead><tr><th>#</th><th>Action</th><th>Date</th><th>Time</th></tr></thead>
+      <tbody>${logs.map((l,i)=>`
+        <tr><td style="color:var(--text3)">${i+1}</td><td>${esc(l.action)}</td><td>${fmtD(l.ts)}</td><td style="color:var(--text2)">${fmtT(l.ts)}</td></tr>
+      `).join('')}</tbody>
+    </table></div>`:'<div class="empty"><span class="empty-ic">📭</span><p>No logs</p></div>'}
+  </div>`;
+}
+
+function adminSetup(){
+  const SQL=`-- Run this ONCE in your Supabase SQL Editor
+-- (Dashboard → SQL Editor → New query → paste → Run)
+
+create table if not exists public.profiles (
+  id text primary key,
+  name text not null,
+  phone text,
+  email text unique not null,
+  role text default 'student',
+  approved boolean default false,
+  photo text,
+  created_at bigint default extract(epoch from now())*1000
+);
+create table if not exists public.batches (
+  id text primary key, name text not null,
+  logo text, description text, teacher_id text,
+  students text[] default '{}',
+  created_at bigint default extract(epoch from now())*1000
+);
+create table if not exists public.subjects (
+  id text primary key, name text not null, logo text, batch_id text
+);
+create table if not exists public.chapters (
+  id text primary key, name text not null, logo text, subject_id text
+);
+create table if not exists public.content (
+  id text primary key, name text not null, url text,
+  download_links jsonb default '[]', type text, chapter_id text,
+  views integer default 0, viewers text[] default '{}',
+  ts bigint, created_at bigint default extract(epoch from now())*1000
+);
+create table if not exists public.attendance (
+  id text primary key, user_id text, date text, ts bigint,
+  unique(user_id, date)
+);
+-- Online presence (add last_active column to profiles)
+alter table if exists public.profiles add column if not exists last_active bigint null;
+
+create table if not exists public.messages (
+  id           text    primary key,
+  sender_id    text    not null,
+  sender_role  text    not null default 'student',
+  receiver_id  text    not null,
+  receiver_role text   not null default 'student',
+  message_text text    not null default '',
+  created_at   bigint  not null default (extract(epoch from now())*1000)::bigint,
+  is_read      boolean not null default false,
+  seen_at      bigint  null
+);
+create table if not exists public.announcements (
+  id          text   primary key,
+  teacher_id  text   not null,
+  batch_id    text   not null,
+  title       text   not null default '',
+  description text   not null default '',
+  image_url   text   null,
+  created_at  bigint not null default (extract(epoch from now())*1000)::bigint
+);
+create table if not exists public.notifications (
+  id text primary key, user_id text, title text,
+  msg text, read boolean default false, ts bigint
+);
+create table if not exists public.logs (
+  id text primary key, action text, ts bigint
+);
+create table if not exists public.bookmarks (
+  id text primary key, user_id text, content_id text,
+  ts bigint, unique(user_id, content_id)
+);
+create table if not exists public.study_hours (
+  id text primary key, user_id text, secs integer, ts bigint
+);
+create table if not exists public.passkeys (
+  id text primary key,
+  user_id text not null,
+  credential_id text unique not null,
+  public_key text,
+  created_at bigint default extract(epoch from now())*1000
+);
+-- If table already exists, add public_key column (safe to run multiple times)
+alter table if exists public.passkeys add column if not exists public_key text;
+
+-- Enable RLS
+do $$ declare t text;
+begin foreach t in array array[
+  'profiles','batches','subjects','chapters','content',
+  'attendance','messages','announcements','notifications','logs','bookmarks','study_hours','passkeys'
+] loop
+  execute format('alter table public.%I enable row level security', t);
+  execute format('drop policy if exists "fs_anon" on public.%I', t);
+  execute format('create policy "fs_anon" on public.%I for all to anon using (true) with check (true)', t);
+  execute format('drop policy if exists "fs_auth" on public.%I', t);
+  execute format('create policy "fs_auth" on public.%I for all to authenticated using (true) with check (true)', t);
+end loop; end $$;
+
+-- Enable Realtime
+alter publication supabase_realtime add table public.messages;
+alter publication supabase_realtime add table public.announcements;
+alter publication supabase_realtime add table public.notifications;
+alter publication supabase_realtime add table public.content;
+-- Passkeys table (no realtime needed, but ensure anon access for login)
+grant select, insert, delete on public.passkeys to anon, authenticated;
+
+-- Storage bucket (run in Dashboard > Storage instead):
+-- Create bucket named "freestudy" and set it to PUBLIC`;
+
+  return `
+  <div class="card card-p24">
+    <div class="sec-t">⚙️ Database Setup Guide</div>
+    <div style="margin-bottom:16px;font-size:13.5px;color:var(--text2);line-height:1.7">
+      Follow these steps once to set up your Supabase database and storage:
+    </div>
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div style="padding:14px;background:var(--bg3);border-radius:11px;border-left:3px solid var(--accent)">
+        <div style="font-weight:700;margin-bottom:6px">Step 1 — Run SQL</div>
+        <div style="font-size:12.5px;color:var(--text2);margin-bottom:10px">Go to Supabase Dashboard → SQL Editor → New query → paste the SQL below → click Run</div>
+        <div class="sql-box">${esc(SQL)}</div>
+        <button class="btn btn-p btn-sm" style="margin-top:10px" onclick="navigator.clipboard.writeText(document.querySelector('.sql-box').textContent);toast('SQL copied!','success')">📋 Copy SQL</button>
+      </div>
+      <div style="padding:14px;background:var(--bg3);border-radius:11px;border-left:3px solid var(--pink)">
+        <div style="font-weight:700;margin-bottom:6px">Step 1b — Passkeys Table (included in SQL above)</div>
+        <div style="font-size:12.5px;color:var(--text2);line-height:1.7">
+          The SQL above already creates the <code style="background:var(--bg);padding:2px 6px;border-radius:5px;color:var(--accent3)">passkeys</code> table and sets RLS.
+          <br>Users register via <strong>Profile → Register Passkey</strong>. Login page has a <strong>Passkey Login</strong> button.
+          <br>Uses real device biometrics via WebAuthn — no extra setup needed.
+        </div>
+      </div>
+      <div style="padding:14px;background:var(--bg3);border-radius:11px;border-left:3px solid var(--success)">
+        <div style="font-weight:700;margin-bottom:6px">Step 2 — Create Storage Bucket</div>
+        <div style="font-size:12.5px;color:var(--text2);line-height:1.7">
+          1. Go to Supabase Dashboard → Storage<br>
+          2. Click <strong>New bucket</strong><br>
+          3. Name it exactly: <code style="background:var(--bg);padding:2px 6px;border-radius:5px;color:var(--accent3)">freestudy</code><br>
+          4. Toggle <strong>Public bucket</strong> ON<br>
+          5. Click Save
+        </div>
+      </div>
+      <div style="padding:14px;background:rgba(239,68,68,.06);border-radius:11px;border-left:4px solid var(--danger)">
+        <div style="font-weight:800;margin-bottom:8px;font-size:14px;color:var(--danger)">&#x26A0;&#xFE0F; Step 0 (Do This FIRST) &mdash; Disable Email Confirmation</div>
+        <div style="font-size:13px;color:var(--text2);line-height:1.75">
+          By default, Supabase requires users to confirm their email before logging in.<br>
+          <strong style="color:var(--text)">To allow instant login after signup, do this once:</strong><br><br>
+          1. Open your Supabase Dashboard<br>
+          2. Go to <strong>Authentication &#x2192; Settings</strong><br>
+          3. Scroll to <strong>"Enable email confirmations"</strong> and turn it <strong>OFF</strong><br>
+          4. Click <strong>Save</strong><br><br>
+          After this, all users (new &amp; existing) can log in immediately without confirming email.
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+/* =====================================================
+   ── TEACHER PAGES ──
+===================================================== */
+async function renderTeacherPage(){
+  switch(S.sub){
+    case 'batches':
+      if(S.chapter) return await teacherContent();
+      if(S.subject)  return await teacherChapters();
+      if(S.batch)    return await teacherSubjects();
+      return await teacherBatches();
+    case 'analytics':     return await teacherAnalytics();
+    case 'announcements': return await renderAnnouncements();
+    case 'chat':          return await renderChatList();
+    case 'notifications': return await renderNotifs(S.user.id);
+    case 'profile':       return teacherProfile();
+    default: return await teacherDash();
+  }
+}
+
+function teacherProfile(){
+  const u=S.user;
+  return `
+  <div class="card card-p24" style="max-width:560px;margin:0 auto">
+    <div class="sec-t">👤 My Profile</div>
+    <div style="display:flex;align-items:center;gap:18px;margin-bottom:24px">
+      <div class="profile-photo" onclick="document.getElementById('tPhotoInput').click()">
+        ${u.photo?`<img src="${esc(u.photo)}" alt="">`:`<span>${(u.name||'T').charAt(0).toUpperCase()}</span>`}
+        <div class="photo-ov">📷</div>
+      </div>
+      <div>
+        <div style="font-size:20px;font-weight:800">${esc(u.name)}</div>
+        <div style="color:var(--text2);font-size:13.5px">${esc(u.email)}</div>
+        <span class="badge b-purple" style="margin-top:6px">👨‍🏫 Teacher</span>
+        <span class="badge ${u.approved?'b-ok':'b-warn'}" style="margin-top:6px;margin-left:4px">${u.approved?'✅ Approved':'⏳ Pending'}</span>
+      </div>
+    </div>
+    <input type="file" id="tPhotoInput" accept="image/*" style="display:none" onchange="handlePhotoUpload(this)">
+    <div class="fg"><label>Full Name</label><input class="fc" id="pName" value="${esc(u.name)}"></div>
+    <div class="fg"><label>Email (read-only)</label><input class="fc" value="${esc(u.email)}" disabled></div>
+    <div class="fg"><label>Phone (read-only)</label><input class="fc" value="${esc(u.phone||'—')}" disabled></div>
+    <button class="btn btn-p btn-full" style="margin-top:4px" onclick="saveProfile()">💾 Save Changes</button>
+
+    <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border)">
+      <div class="sec-t-sm">🔐 Passkey (Biometric Login)</div>
+      <div class="pk-status-card">
+        <div class="pk-icon-wrap">👆</div>
+        <div style="flex:1;min-width:0">
+          <div style="font-weight:700;font-size:14px;margin-bottom:4px">Device Biometric Login</div>
+          <div id="pkStatus" style="font-size:12.5px;color:var(--text2)">Checking status…</div>
+        </div>
+        <span id="pkBadge" class="pk-badge unregistered">Not set</span>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-p" onclick="registerPasskey()" id="pkRegBtn">👆 Register Passkey</button>
+        <button class="btn btn-del btn-sm" onclick="deletePasskey()" id="pkDelBtn" style="display:none">🗑️ Remove</button>
+      </div>
+      <div style="margin-top:10px;padding:10px;background:var(--bg3);border-radius:9px;font-size:12px;color:var(--text2);line-height:1.6">
+        ℹ️ Register your fingerprint, Face ID, or device PIN once — then skip the password every time you login.
+      </div>
+    </div>
+  </div>`;
+}
+
+async function teacherDash(){
+  const uid2=S.user.id;
+  const [myBatches,allSubjs,allChaps,allCont]=await Promise.all([
+    sb.from('batches').select('*').eq('teacher_id',uid2).then(r=>r.data||[]),
+    dbSubjs(), dbChaps(), dbContent()
+  ]);
+  const bIds=myBatches.map(b=>b.id);
+  const subs=allSubjs.filter(s=>bIds.includes(s.batch_id));
+  const chaps=allChaps.filter(c=>subs.some(s=>s.id===c.subject_id));
+  const cont=allCont.filter(c=>chaps.some(ch=>ch.id===c.chapter_id));
+  const totalStu=myBatches.reduce((n,b)=>n+(b.students||[]).length,0);
+  const totalViews=cont.reduce((n,c)=>n+(c.views||0),0);
+  return `
+  <div class="g4" style="margin-bottom:18px">
+    <div class="stat"><div class="stat-ic ic-blue">👨‍🎓</div><div><div class="stat-val">${totalStu}</div><div class="stat-lbl">Students</div></div></div>
+    <div class="stat"><div class="stat-ic ic-green">📦</div><div><div class="stat-val">${myBatches.length}</div><div class="stat-lbl">Batches</div></div></div>
+    <div class="stat"><div class="stat-ic ic-purple">📖</div><div><div class="stat-val">${subs.length}</div><div class="stat-lbl">Subjects</div></div></div>
+    <div class="stat"><div class="stat-ic ic-yellow">👁️</div><div><div class="stat-val">${totalViews}</div><div class="stat-lbl">Unique Views</div></div></div>
+  </div>
+  <div class="g2">
+    <div class="card card-p24">
+      <div class="sec-t">📦 Recent Batches</div>
+      ${myBatches.slice(0,5).map(b=>`
+        <div class="item-row" onclick="S.sub='batches';S.batch=${JSON.stringify(b).replace(/"/g,'&quot;')};render()" onclick2="">
+          <div class="item-ic">${b.logo?`<img src="${esc(b.logo)}" alt="">`:'📦'}</div>
+          <div class="item-info"><h4>${esc(b.name)}</h4><p>${(b.students||[]).length} students</p></div>
+          <span class="ia">›</span>
+        </div>
+      `).join('')||'<div class="empty"><span class="empty-ic">📦</span><p>No batches yet</p></div>'}
+    </div>
+    <div class="card card-p24">
+      <div class="sec-t">📊 Content Breakdown</div>
+      ${[
+        ['📄 Notes',   cont.filter(c=>c.type==='notes').length,   cont.filter(c=>c.type==='notes').reduce((n,c)=>n+(c.views||0),0)],
+        ['🎥 Lectures',cont.filter(c=>c.type==='lecture').length, cont.filter(c=>c.type==='lecture').reduce((n,c)=>n+(c.views||0),0)],
+        ['📋 DPP',     cont.filter(c=>c.type==='dpp').length,     cont.filter(c=>c.type==='dpp').reduce((n,c)=>n+(c.views||0),0)],
+      ].map(([lbl,count,views])=>`
+        <div style="margin-bottom:14px">
+          <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px">
+            <span>${lbl}</span><span style="color:var(--text2)">${count} items · ${views} views</span>
+          </div>
+          <div class="prog"><div class="prog-bar" style="width:${Math.min(count*10,100)}%"></div></div>
+        </div>
+      `).join('')}
+    </div>
+  </div>`;
+}
+
+async function teacherBatches(){
+  const {data:batches}=await sb.from('batches').select('*').eq('teacher_id',S.user.id).order('created_at');
+  const allBatches=batches||[];
+  return `
+  <div style="display:flex;gap:10px;margin-bottom:16px;align-items:center">
+    <div class="search-row" style="flex:1">
+      <span class="si">🔍</span>
+      <input class="fc" id="bQ" placeholder="Search batches…" oninput="filterTeacherBatches(this.value)">
+    </div>
+    <button class="btn btn-p" onclick="modalNewBatch()">+ New Batch</button>
+  </div>
+  <div class="g3" id="bGrid">
+    ${allBatches.map(b=>renderTeacherBatchCard(b)).join('')||
+    '<div class="empty" style="grid-column:1/-1"><span class="empty-ic">📦</span><p>No batches yet. Create your first!</p></div>'}
+  </div>`;
+}
+async function filterTeacherBatches(q){
+  const {data}=await sb.from('batches').select('*').eq('teacher_id',S.user.id).ilike('name',`%${q}%`);
+  const el=document.getElementById('bGrid');
+  if(el)el.innerHTML=(data||[]).map(renderTeacherBatchCard).join('')||'<div class="empty"><span class="empty-ic">🔍</span><p>No results</p></div>';
+}
+function renderTeacherBatchCard(b){
+  return `
+  <div class="batch-card">
+    <div class="bch" onclick="drillBatch(${JSON.stringify(b).replace(/"/g,'&quot;')})" style="cursor:pointer">
+      <div class="b-img">${b.logo?`<img src="${esc(b.logo)}" alt="">`:'📦'}</div>
+      <div><div style="font-size:15px;font-weight:800">${esc(b.name)}</div>
+        <div style="font-size:12px;color:var(--text2);margin-top:3px">${esc(b.description||'')}</div>
+      </div>
+    </div>
+    <div class="b-meta">
+      <span>👨‍🎓 ${(b.students||[]).length} students</span>
+      <span>📅 ${fmtD(b.created_at)}</span>
+    </div>
+    <div class="b-acts">
+      <button class="btn btn-p btn-sm" style="flex:1" onclick="drillBatch(${JSON.stringify(b).replace(/"/g,'&quot;')})">Open →</button>
+      <button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();modalEditBatch(${JSON.stringify(b).replace(/"/g,'&quot;')})">✏️</button>
+      <button class="btn btn-del btn-sm" onclick="event.stopPropagation();deleteBatch('${b.id}')">🗑️</button>
+    </div>
+  </div>`;
+}
+function drillBatch(b){ S.batch=typeof b==='string'?JSON.parse(b):b; S.subject=null; S.chapter=null; render(); }
+
+function modalNewBatch(){
+  openModal(`
+  <div class="mh"><h3>📦 New Batch</h3><button class="mc-btn" onclick="closeModal()">✕</button></div>
+  <div class="fg"><label>Batch Name *</label><input class="fc" id="mb_n" placeholder="e.g. JEE 2025 Batch A"></div>
+  <div class="fg"><label>Logo URL</label><input class="fc" id="mb_l" placeholder="https://…"></div>
+  <div class="fg"><label>Description</label><textarea class="fc" id="mb_d" rows="2" style="resize:vertical" placeholder="Short description…"></textarea></div>
+  <div class="m-actions"><button class="btn btn-sec" onclick="closeModal()">Cancel</button><button class="btn btn-p" onclick="createBatch()">Create</button></div>`);
+}
+async function createBatch(){
+  const n=(document.getElementById('mb_n')?.value||'').trim();
+  const l=(document.getElementById('mb_l')?.value||'').trim();
+  const d=(document.getElementById('mb_d')?.value||'').trim();
+  if(!n){toast('Name required','warning');return;}
+  const {error}=await sb.from('batches').insert({id:uid(),name:n,logo:l,description:d,teacher_id:S.user.id,students:[],created_at:now()});
+  if(error){toast(error.message,'error');return;}
+  await addLog(`Batch "${n}" created`);
+  closeModal(); toast('Batch created! 🎉','success'); render();
+}
+function modalEditBatch(b){
+  if(typeof b==='string') b=JSON.parse(b);
+  openModal(`
+  <div class="mh"><h3>✏️ Edit Batch</h3><button class="mc-btn" onclick="closeModal()">✕</button></div>
+  <div class="fg"><label>Name</label><input class="fc" id="mb_n" value="${esc(b.name)}"></div>
+  <div class="fg"><label>Logo URL</label><input class="fc" id="mb_l" value="${esc(b.logo||'')}"></div>
+  <div class="fg"><label>Description</label><textarea class="fc" id="mb_d" rows="2" style="resize:vertical">${esc(b.description||'')}</textarea></div>
+  <div class="m-actions"><button class="btn btn-sec" onclick="closeModal()">Cancel</button><button class="btn btn-p" onclick="saveBatch('${b.id}')">Save</button></div>`);
+}
+async function saveBatch(id){
+  const n=(document.getElementById('mb_n')?.value||'').trim();
+  const l=(document.getElementById('mb_l')?.value||'').trim();
+  const d=(document.getElementById('mb_d')?.value||'').trim();
+  const {error}=await sb.from('batches').update({name:n,logo:l,description:d}).eq('id',id);
+  if(error){toast(error.message,'error');return;}
+  if(S.batch?.id===id) S.batch={...S.batch,name:n,logo:l,description:d};
+  closeModal(); toast('Updated!','success'); render();
+}
+async function deleteBatch(id){
+  showConfirm('Delete this batch? All data inside will be lost.', '📦', async () => {
+    await sb.from('batches').delete().eq('id',id);
+    if(S.batch?.id===id){S.batch=null;S.subject=null;S.chapter=null;}
+    toast('Deleted','warning'); render();
+  }, '🗑️ Delete', 'btn-del');
+}
+
+async function teacherSubjects(){
+  const b=S.batch;
+  const {data:subs}=await sb.from('subjects').select('*').eq('batch_id',b.id);
+  const allSubs=subs||[];
+  const chapCounts={};
+  for(const s of allSubs){
+    const {count}=await sb.from('chapters').select('*',{count:'exact',head:true}).eq('subject_id',s.id);
+    chapCounts[s.id]=count||0;
+  }
+  return `
+  <div class="bc">
+    <span class="bc-a" onclick="S.batch=null;render()">📦 Batches</span>
+    <span class="bc-sep">/</span>
+    <span class="bc-cur">📦 ${esc(b.name)}</span>
+  </div>
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+    <div class="sec-t" style="margin:0">📖 Subjects</div>
+    <button class="btn btn-p" onclick="modalNewSubject()">+ Add Subject</button>
+  </div>
+  <span class="badge b-blue" style="margin-bottom:14px;display:inline-block">👨‍🎓 ${(b.students||[]).length} enrolled</span>
+  ${allSubs.map(s=>`
+    <div class="item-row" onclick="drillSubject(${JSON.stringify(s).replace(/"/g,'&quot;')})">
+      <div class="item-ic">${s.logo?`<img src="${esc(s.logo)}" alt="">`:'📖'}</div>
+      <div class="item-info"><h4>${esc(s.name)}</h4><p>${chapCounts[s.id]||0} chapters</p></div>
+      <div class="item-acts" onclick="event.stopPropagation()">
+        <button class="btn btn-ghost btn-xs" onclick="modalEditSubject(${JSON.stringify(s).replace(/"/g,'&quot;')})">✏️</button>
+        <button class="btn btn-del btn-xs" onclick="deleteSubject('${s.id}')">🗑️</button>
+      </div>
+      <span class="ia">›</span>
+    </div>
+  `).join('')||'<div class="empty"><span class="empty-ic">📖</span><p>No subjects yet</p></div>'}`;
+}
+function drillSubject(s){ S.subject=typeof s==='string'?JSON.parse(s):s; S.chapter=null; render(); }
+function modalNewSubject(){
+  openModal(`
+  <div class="mh"><h3>📖 Add Subject</h3><button class="mc-btn" onclick="closeModal()">✕</button></div>
+  <div class="fg"><label>Name *</label><input class="fc" id="ms_n" placeholder="e.g. Physics"></div>
+  <div class="fg"><label>Logo URL</label><input class="fc" id="ms_l" placeholder="https://…"></div>
+  <div class="m-actions"><button class="btn btn-sec" onclick="closeModal()">Cancel</button><button class="btn btn-p" onclick="createSubject()">Add</button></div>`);
+}
+async function createSubject(){
+  const n=(document.getElementById('ms_n')?.value||'').trim();
+  const l=(document.getElementById('ms_l')?.value||'').trim();
+  if(!n){toast('Name required','warning');return;}
+  await sb.from('subjects').insert({id:uid(),name:n,logo:l,batch_id:S.batch.id});
+  closeModal(); toast('Subject added!','success'); render();
+}
+function modalEditSubject(s){
+  if(typeof s==='string') s=JSON.parse(s);
+  openModal(`
+  <div class="mh"><h3>✏️ Edit Subject</h3><button class="mc-btn" onclick="closeModal()">✕</button></div>
+  <div class="fg"><label>Name</label><input class="fc" id="ms_n" value="${esc(s.name)}"></div>
+  <div class="fg"><label>Logo URL</label><input class="fc" id="ms_l" value="${esc(s.logo||'')}"></div>
+  <div class="m-actions"><button class="btn btn-sec" onclick="closeModal()">Cancel</button><button class="btn btn-p" onclick="saveSubject('${s.id}')">Save</button></div>`);
+}
+async function saveSubject(id){
+  const n=(document.getElementById('ms_n')?.value||'').trim();
+  const l=(document.getElementById('ms_l')?.value||'').trim();
+  await sb.from('subjects').update({name:n,logo:l}).eq('id',id);
+  closeModal(); toast('Updated!','success'); render();
+}
+async function deleteSubject(id){
+  showConfirm('Delete this subject and all its chapters & content?', '📚', async () => {
+    const {data:chaps}=await sb.from('chapters').select('id').eq('subject_id',id);
+    const cIds=(chaps||[]).map(c=>c.id);
+    if(cIds.length) await sb.from('content').delete().in('chapter_id',cIds);
+    await sb.from('chapters').delete().eq('subject_id',id);
+    await sb.from('subjects').delete().eq('id',id);
+    toast('Deleted','warning'); render();
+  }, '🗑️ Delete', 'btn-del');
+}
+
+async function teacherChapters(){
+  const s=S.subject; const b=S.batch;
+  const {data:chaps}=await sb.from('chapters').select('*').eq('subject_id',s.id);
+  const allChaps=chaps||[];
+  const contCounts={};
+  for(const c of allChaps){
+    const {count}=await sb.from('content').select('*',{count:'exact',head:true}).eq('chapter_id',c.id);
+    contCounts[c.id]=count||0;
+  }
+  return `
+  <div class="bc">
+    <span class="bc-a" onclick="S.batch=null;S.subject=null;render()">📦</span>
+    <span class="bc-sep">/</span>
+    <span class="bc-a" onclick="S.subject=null;render()">${esc(b.name)}</span>
+    <span class="bc-sep">/</span>
+    <span class="bc-cur">📖 ${esc(s.name)}</span>
+  </div>
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+    <div class="sec-t" style="margin:0">📝 Chapters</div>
+    <button class="btn btn-p" onclick="modalNewChapter()">+ Add Chapter</button>
+  </div>
+  ${allChaps.map(c=>`
+    <div class="item-row" onclick="drillChapter(${JSON.stringify(c).replace(/"/g,'&quot;')})">
+      <div class="item-ic">${c.logo?`<img src="${esc(c.logo)}" alt="">`:'📝'}</div>
+      <div class="item-info"><h4>${esc(c.name)}</h4><p>${contCounts[c.id]||0} items</p></div>
+      <div class="item-acts" onclick="event.stopPropagation()">
+        <button class="btn btn-ghost btn-xs" onclick="modalEditChapter(${JSON.stringify(c).replace(/"/g,'&quot;')})">✏️</button>
+        <button class="btn btn-del btn-xs" onclick="deleteChapter('${c.id}')">🗑️</button>
+      </div>
+      <span class="ia">›</span>
+    </div>
+  `).join('')||'<div class="empty"><span class="empty-ic">📝</span><p>No chapters yet</p></div>'}`;
+}
+function drillChapter(c){ S.chapter=typeof c==='string'?JSON.parse(c):c; render(); }
+function modalNewChapter(){
+  openModal(`
+  <div class="mh"><h3>📝 Add Chapter</h3><button class="mc-btn" onclick="closeModal()">✕</button></div>
+  <div class="fg"><label>Name *</label><input class="fc" id="mc_n" placeholder="e.g. Kinematics"></div>
+  <div class="fg"><label>Logo URL</label><input class="fc" id="mc_l" placeholder="https://…"></div>
+  <div class="m-actions"><button class="btn btn-sec" onclick="closeModal()">Cancel</button><button class="btn btn-p" onclick="createChapter()">Add</button></div>`);
+}
+async function createChapter(){
+  const n=(document.getElementById('mc_n')?.value||'').trim();
+  const l=(document.getElementById('mc_l')?.value||'').trim();
+  if(!n){toast('Name required','warning');return;}
+  await sb.from('chapters').insert({id:uid(),name:n,logo:l,subject_id:S.subject.id});
+  closeModal(); toast('Chapter added!','success'); render();
+}
+function modalEditChapter(c){
+  if(typeof c==='string') c=JSON.parse(c);
+  openModal(`
+  <div class="mh"><h3>✏️ Edit Chapter</h3><button class="mc-btn" onclick="closeModal()">✕</button></div>
+  <div class="fg"><label>Name</label><input class="fc" id="mc_n" value="${esc(c.name)}"></div>
+  <div class="fg"><label>Logo URL</label><input class="fc" id="mc_l" value="${esc(c.logo||'')}"></div>
+  <div class="m-actions"><button class="btn btn-sec" onclick="closeModal()">Cancel</button><button class="btn btn-p" onclick="saveChapter('${c.id}')">Save</button></div>`);
+}
+async function saveChapter(id){
+  await sb.from('chapters').update({name:(document.getElementById('mc_n')?.value||'').trim(),logo:(document.getElementById('mc_l')?.value||'').trim()}).eq('id',id);
+  closeModal(); toast('Updated!','success'); render();
+}
+async function deleteChapter(id){
+  showConfirm('Delete this chapter and all its content items?', '📝', async () => {
+    await sb.from('content').delete().eq('chapter_id',id);
+    await sb.from('chapters').delete().eq('id',id);
+    toast('Deleted','warning'); render();
+  }, '🗑️ Delete', 'btn-del');
+}
+
+/* ─ Content Manager (Teacher) ─ */
+async function teacherContent(){
+  const ch=S.chapter; const s=S.subject; const b=S.batch;
+  const {data:allItems}=await sb.from('content').select('*').eq('chapter_id',ch.id).order('ts');
+  const all=allItems||[];
+  const notes=all.filter(c=>c.type==='notes');
+  const lecs=all.filter(c=>c.type==='lecture');
+  const dpp=all.filter(c=>c.type==='dpp');
+  const cur=S.cTab==='notes'?notes:S.cTab==='lecture'?lecs:dpp;
+  return `
+  <div class="bc">
+    <span class="bc-a" onclick="S.batch=null;S.subject=null;S.chapter=null;render()">📦</span>
+    <span class="bc-sep">/</span>
+    <span class="bc-a" onclick="S.subject=null;S.chapter=null;render()">${esc(b.name)}</span>
+    <span class="bc-sep">/</span>
+    <span class="bc-a" onclick="S.chapter=null;render()">${esc(s.name)}</span>
+    <span class="bc-sep">/</span>
+    <span class="bc-cur">📝 ${esc(ch.name)}</span>
+  </div>
+  <div class="tabs">
+    <div class="tab ${S.cTab==='notes'?'on':''}" onclick="S.cTab='notes';render()">📄 Notes (${notes.length})</div>
+    <div class="tab ${S.cTab==='lecture'?'on':''}" onclick="S.cTab='lecture';render()">🎥 Lectures (${lecs.length})</div>
+    <div class="tab ${S.cTab==='dpp'?'on':''}" onclick="S.cTab='dpp';render()">📋 DPP (${dpp.length})</div>
+  </div>
+  <div style="margin-bottom:14px">
+    <button class="btn btn-p btn-sm" onclick="modalAddContent()">
+      + Add ${S.cTab==='notes'?'Notes':S.cTab==='lecture'?'Lecture':'DPP'}
+    </button>
+  </div>
+  ${cur.map(item=>renderContentItem(item,true)).join('')||
+  '<div class="empty"><span class="empty-ic">📭</span><p>No content yet. Add something!</p></div>'}`;
+}
+
+/* ─ Content modal with file upload ─ */
+function modalAddContent(){
+  const type=S.cTab;
+  openModal(`
+  <div class="mh"><h3>${type==='notes'?'📄 Add Notes':type==='lecture'?'🎥 Add Lecture':'📋 Add DPP'}</h3><button class="mc-btn" onclick="closeModal()">✕</button></div>
+  <div class="fg"><label>Title *</label><input class="fc" id="ac_n" placeholder="e.g. Chapter 1 Notes"></div>
+  ${type==='lecture'
+    ? `<div class="fg"><label>Video URL *</label><input class="fc" id="ac_url" placeholder="YouTube / Drive video link…"></div>`
+    : `<div>
+         <div class="upload-tabs">
+           <div class="upload-tab on" id="ut_link" onclick="switchUpload('link')">🔗 Paste Link</div>
+           <div class="upload-tab" id="ut_file" onclick="switchUpload('file')">📁 Upload File</div>
+         </div>
+         <div id="linkSection">
+           <div class="fg"><label>Preview / View URL</label><input class="fc" id="ac_url" placeholder="Google Drive preview link (optional)"></div>
+           <div style="background:var(--bg3);border:1px solid var(--border);border-radius:11px;padding:14px;margin-bottom:14px">
+             <div style="font-size:12px;font-weight:800;color:var(--text2);text-transform:uppercase;letter-spacing:.6px;margin-bottom:10px">⬇️ Download Links</div>
+             <div id="dlLinksWrap" style="display:flex;flex-direction:column;gap:8px"></div>
+             <div style="display:flex;gap:7px;margin-top:10px;flex-wrap:wrap">
+               <button type="button" class="btn btn-ghost btn-xs" onclick="addDLLink('Google Drive','https://drive.google.com/uc?export=download&id=')">📁 Drive</button>
+               <button type="button" class="btn btn-ghost btn-xs" onclick="addDLLink('Dropbox','https://www.dropbox.com/s/')">📦 Dropbox</button>
+               <button type="button" class="btn btn-ghost btn-xs" onclick="addDLLink('OneDrive','https://onedrive.live.com/download?')">☁️ OneDrive</button>
+               <button type="button" class="btn btn-ghost btn-xs" onclick="addDLLink('Telegram','https://t.me/')">✈️ Telegram</button>
+               <button type="button" class="btn btn-ghost btn-xs" onclick="addDLLink('Custom','')">➕ Custom</button>
+             </div>
+           </div>
+         </div>
+         <div id="fileSection" style="display:none">
+           <div class="dropzone" id="dropzone" onclick="document.getElementById('fileInput').click()" ondragover="event.preventDefault();this.classList.add('drag')" ondragleave="this.classList.remove('drag')" ondrop="handleFileDrop(event)">
+             <input type="file" id="fileInput" accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.zip,.png,.jpg,.jpeg" onchange="handleFileSelect(this)">
+             <div style="font-size:32px;margin-bottom:8px">📂</div>
+             <div style="font-weight:700;margin-bottom:4px">Drop file here or click to browse</div>
+             <div style="font-size:12px;color:var(--text3)">PDF, DOC, PPT, XLS, ZIP, images — max 50MB</div>
+           </div>
+           <div id="uploadProgress" style="display:none;margin-top:10px">
+             <div style="font-size:12.5px;color:var(--text2);margin-bottom:5px" id="uploadLabel">Uploading…</div>
+             <div class="upload-bar"><div class="upload-fill" id="uploadFill" style="width:0%"></div></div>
+           </div>
+           <input class="fc" id="uploadedUrl" type="hidden" value="">
+           <div id="uploadedInfo" style="display:none;margin-top:10px;padding:10px;background:rgba(16,185,129,.08);border-radius:9px;font-size:13px;color:var(--success)"></div>
+         </div>
+       </div>`
+  }
+  <div class="fg"><label>Date</label><input class="fc" type="date" id="ac_d" value="${today()}"></div>
+  <div class="m-actions"><button class="btn btn-sec" onclick="closeModal()">Cancel</button><button class="btn btn-p" id="addContentBtn" onclick="createContent()">Add</button></div>`);
+}
+
+function switchUpload(mode){
+  S.uploadMode=mode;
+  document.getElementById('linkSection').style.display=mode==='link'?'':'none';
+  document.getElementById('fileSection').style.display=mode==='file'?'':'none';
+  document.getElementById('ut_link').className='upload-tab'+(mode==='link'?' on':'');
+  document.getElementById('ut_file').className='upload-tab'+(mode==='file'?' on':'');
+}
+
+function handleFileDrop(e){
+  e.preventDefault();
+  document.getElementById('dropzone').classList.remove('drag');
+  const file=e.dataTransfer.files[0]; if(file) startFileUpload(file);
+}
+function handleFileSelect(input){
+  const file=input.files[0]; if(file) startFileUpload(file);
+}
+async function startFileUpload(file){
+  if(file.size>52428800){toast('File too large (max 50MB)','error');return;}
+  document.getElementById('uploadProgress').style.display='';
+  document.getElementById('addContentBtn').disabled=true;
+  try {
+    const url=await uploadFile(file,(pct)=>{
+      document.getElementById('uploadFill').style.width=pct+'%';
+      document.getElementById('uploadLabel').textContent=`Uploading ${file.name}… ${pct}%`;
+    });
+    document.getElementById('uploadedUrl').value=url;
+    document.getElementById('uploadedInfo').style.display='';
+    document.getElementById('uploadedInfo').innerHTML=`✅ Uploaded: <strong>${esc(file.name)}</strong> <a href="${esc(url)}" target="_blank" style="color:var(--accent)">Preview →</a>`;
+    document.getElementById('uploadLabel').textContent='Upload complete!';
+    toast('File uploaded! ✅','success');
+  } catch(err){
+    toast('Upload failed: '+err.message,'error');
+    document.getElementById('uploadProgress').style.display='none';
+  }
+  document.getElementById('addContentBtn').disabled=false;
+}
+
+async function createContent(){
+  const n=(document.getElementById('ac_n')?.value||'').trim();
+  const d=document.getElementById('ac_d')?.value||today();
+  if(!n){toast('Title required','warning');return;}
+
+  let url=''; let downloadLinks=[];
+  if(S.cTab==='lecture'){
+    url=(document.getElementById('ac_url')?.value||'').trim();
+    if(!url){toast('Video URL required','warning');return;}
+  } else {
+    if(S.uploadMode==='file'){
+      url=document.getElementById('uploadedUrl')?.value||'';
+      if(!url){toast('Please upload a file first','warning');return;}
+      downloadLinks=[{label:'Download File',url}];
+    } else {
+      url=(document.getElementById('ac_url')?.value||'').trim();
+      downloadLinks=collectDLLinks();
+      if(!url&&downloadLinks.length===0){toast('Add a URL or at least one download link','warning');return;}
+    }
+  }
+
+  const {error}=await sb.from('content').insert({
+    id:uid(), name:n, url, download_links:downloadLinks,
+    type:S.cTab, chapter_id:S.chapter.id,
+    ts:new Date(d).getTime()||now(), views:0, viewers:[], created_at:now()
+  });
+  if(error){toast(error.message,'error');return;}
+  closeModal(); toast('Content added! 🎉','success'); render();
+}
+
+function addDLLink(label,urlv){
+  const wrap=document.getElementById('dlLinksWrap'); if(!wrap)return;
+  const row=document.createElement('div');
+  row.className='dl-row'; row.style.cssText='display:flex;gap:7px;align-items:center';
+  row.innerHTML=`
+    <input class="fc dl-lbl" placeholder="Label" value="${esc(label)}" style="flex:0 0 120px;font-size:12.5px;padding:8px 10px">
+    <input class="fc dl-url" placeholder="https://…" value="${esc(urlv)}" style="flex:1;font-size:12.5px;padding:8px 10px">
+    <button type="button" class="btn btn-del btn-xs" onclick="this.closest('.dl-row').remove()">✕</button>`;
+  wrap.appendChild(row);
+  row.querySelector('.dl-url').focus();
+}
+function collectDLLinks(){
+  return Array.from(document.querySelectorAll('#dlLinksWrap .dl-row')).map(row=>({
+    label:(row.querySelector('.dl-lbl')?.value||'').trim()||'Download',
+    url:(row.querySelector('.dl-url')?.value||'').trim()
+  })).filter(l=>l.url);
+}
+
+function modalEditContent(id,item){
+  if(typeof item==='string') item=JSON.parse(item);
+  const links=item.download_links||[];
+  openModal(`
+  <div class="mh"><h3>✏️ Edit Content</h3><button class="mc-btn" onclick="closeModal()">✕</button></div>
+  <div class="fg"><label>Title</label><input class="fc" id="ac_n" value="${esc(item.name)}"></div>
+  ${item.type==='lecture'
+    ?`<div class="fg"><label>Video URL</label><input class="fc" id="ac_url" value="${esc(item.url||'')}"></div>`
+    :`<div class="fg"><label>Preview URL</label><input class="fc" id="ac_url" value="${esc(item.url||'')}" placeholder="Optional"></div>
+      <div style="background:var(--bg3);border:1px solid var(--border);border-radius:11px;padding:14px;margin-bottom:14px">
+        <div style="font-size:12px;font-weight:800;color:var(--text2);margin-bottom:10px">⬇️ Download Links</div>
+        <div id="dlLinksWrap" style="display:flex;flex-direction:column;gap:8px">
+          ${links.map(l=>`<div class="dl-row" style="display:flex;gap:7px;align-items:center">
+            <input class="fc dl-lbl" value="${esc(l.label||'')}" placeholder="Label" style="flex:0 0 120px;font-size:12.5px;padding:8px 10px">
+            <input class="fc dl-url" value="${esc(l.url||'')}" placeholder="https://…" style="flex:1;font-size:12.5px;padding:8px 10px">
+            <button type="button" class="btn btn-del btn-xs" onclick="this.closest('.dl-row').remove()">✕</button>
+          </div>`).join('')}
+        </div>
+        <div style="display:flex;gap:7px;margin-top:10px;flex-wrap:wrap">
+          <button type="button" class="btn btn-ghost btn-xs" onclick="addDLLink('Google Drive','https://drive.google.com/uc?export=download&id=')">📁 Drive</button>
+          <button type="button" class="btn btn-ghost btn-xs" onclick="addDLLink('Dropbox','https://www.dropbox.com/s/')">📦 Dropbox</button>
+          <button type="button" class="btn btn-ghost btn-xs" onclick="addDLLink('Custom','')">➕ Custom</button>
+        </div>
+      </div>`
+  }
+  <div class="fg"><label>Date</label><input class="fc" type="date" id="ac_d" value="${new Date(item.ts).toISOString().split('T')[0]}"></div>
+  <div class="m-actions"><button class="btn btn-sec" onclick="closeModal()">Cancel</button><button class="btn btn-p" onclick="saveContent('${id}')">Save</button></div>`);
+}
+async function saveContent(id){
+  const n=(document.getElementById('ac_n')?.value||'').trim();
+  const url=(document.getElementById('ac_url')?.value||'').trim();
+  const d=document.getElementById('ac_d')?.value||today();
+  const dl=collectDLLinks();
+  const {error}=await sb.from('content').update({name:n,url,download_links:dl,ts:new Date(d).getTime()||now()}).eq('id',id);
+  if(error){toast(error.message,'error');return;}
+  closeModal(); toast('Updated!','success'); render();
+}
+async function deleteContent(id){
+  showConfirm('Delete this content item? This cannot be undone.', '🗑️', async () => {
+    await sb.from('content').delete().eq('id',id);
+    await sb.from('bookmarks').delete().eq('content_id',id);
+    toast('Deleted','warning'); render();
+  }, '🗑️ Delete', 'btn-del');
+}
+
+function renderContentItem(item, isTeacher=false){
+  const icons={notes:'📄',lecture:'🎥',dpp:'📋'};
+  const links=item.download_links||[];
+  const v=item.views||0;
+  let dlButtons='';
+  if(item.type!=='lecture'){
+    if(links.length===1){
+      dlButtons=`<button class="btn btn-ok btn-xs" onclick="event.stopPropagation();downloadSingle('${esc(links[0].url)}','${esc(links[0].label)}')">${getDLIcon(links[0].label)} ${esc(links[0].label)}</button>`;
+    } else if(links.length>1){
+      dlButtons=`<button class="btn btn-ok btn-xs" onclick="event.stopPropagation();showDLPicker(${JSON.stringify(item).replace(/"/g,'&quot;')})">⬇️ Download (${links.length})</button>`;
+    } else if(item.url){
+      dlButtons=`<button class="btn btn-ok btn-xs" onclick="event.stopPropagation();downloadSingle('${esc(item.url)}','File')">⬇️ Download</button>`;
+    }
+  }
+  const itemJson=JSON.stringify(item).replace(/"/g,'&quot;');
+  return `
+  <div class="ci" id="ci_${item.id}">
+    <div class="ci-icon">${icons[item.type]||'📄'}</div>
+    <div class="ci-info">
+      <div class="ci-name">${esc(item.name)}</div>
+      <div class="ci-meta">📅 ${fmtD(item.ts)} &nbsp;·&nbsp; 👁️ ${v} unique view${v!==1?'s':''}${links.length?' &nbsp;·&nbsp; ⬇️ '+links.length+' link'+(links.length>1?'s':''):''}</div>
+      ${!isTeacher&&links.length>1?`
+      <div style="display:flex;gap:5px;flex-wrap:wrap;margin-top:7px">
+        ${links.map(l=>`
+          <a href="${esc(l.url)}" target="_blank" rel="noopener"
+             style="display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:20px;font-size:11.5px;font-weight:700;background:rgba(16,185,129,.1);color:var(--success);border:1px solid rgba(16,185,129,.2);text-decoration:none"
+             onclick="toast('Downloading: ${esc(l.label)}','success')">
+            ${getDLIcon(l.label)} ${esc(l.label)}
+          </a>
+        `).join('')}
+      </div>`:''}
+    </div>
+    <div class="ci-acts">
+      ${item.type==='lecture'
+        ?`<button class="btn btn-p btn-xs" onclick="viewContent('${item.id}','${esc(item.url||'')}','${esc(item.name)}')">▶️ Watch</button>`
+        :`${item.url?`<button class="btn btn-p btn-xs" onclick="viewContent('${item.id}','${esc(item.url||'')}','${esc(item.name)}')">👁️ View</button>`:''}
+          ${dlButtons}`
+      }
+      ${isTeacher?`<button class="btn btn-ghost btn-xs" onclick="modalEditContent('${item.id}',${itemJson})">✏️</button>
+                   <button class="btn btn-del btn-xs" onclick="deleteContent('${item.id}')">🗑️</button>`:
+        `<button class="btn btn-ghost btn-xs" onclick="toggleBookmark('${item.id}')">🔖</button>`
+      }
+    </div>
+  </div>`;
+}
+
+async function viewContent(id,url,name){
+  const uid2=S.user?.id||'anon';
+  // Unique view logic
+  const {data:item}=await sb.from('content').select('viewers,views').eq('id',id).single();
+  const viewers=item?.viewers||[];
+  if(!viewers.includes(uid2)){
+    viewers.push(uid2);
+    await sb.from('content').update({viewers,views:viewers.length}).eq('id',id);
+  }
+  const viewCount=viewers.length;
+  // Update DOM meta
+  const el=document.getElementById(`ci_${id}`);
+  if(el){ const m=el.querySelector('.ci-meta'); if(m) m.innerHTML=`📅 — &nbsp;·&nbsp; 👁️ ${viewCount} unique view${viewCount!==1?'s':''}`; }
+
+  if(url.includes('youtube.com')||url.includes('youtu.be')){
+    openModal(`
+    <div class="mh"><h3>🎥 ${esc(name)}</h3><button class="mc-btn" onclick="closeModal()">✕</button></div>
+    <div style="position:relative;padding-bottom:56.25%;border-radius:10px;overflow:hidden">
+      <iframe src="${esc(getYTEmbed(url))}" style="position:absolute;inset:0;width:100%;height:100%;border:0" allowfullscreen></iframe>
+    </div>
+    <div style="margin-top:12px;font-size:12.5px;color:var(--text2)">👁️ ${viewCount} unique view${viewCount!==1?'s':''} &nbsp;${viewers.includes(uid2)&&viewers.indexOf(uid2)===viewers.length-1?'<span style="color:var(--success)">· recorded ✅</span>':'<span style="color:var(--text3)">· already counted</span>'}</div>`);
+  } else if(url){
+    window.open(url,'_blank');
+    toast(viewers.includes(uid2)&&viewers.length===viewCount?'View recorded ✅':'Opening… (already counted)','info');
+  }
+}
+
+function downloadSingle(url,label){
+  const a=document.createElement('a'); a.href=url; a.target='_blank'; a.rel='noopener'; a.click();
+  toast(`Downloading: ${label} ⬇️`,'success');
+}
+function showDLPicker(item){
+  if(typeof item==='string') item=JSON.parse(item);
+  const links=item.download_links||[];
+  openModal(`
+  <div class="mh"><h3>⬇️ ${esc(item.name)}</h3><button class="mc-btn" onclick="closeModal()">✕</button></div>
+  <p style="font-size:13px;color:var(--text2);margin-bottom:14px">Choose a download source:</p>
+  <div style="display:flex;flex-direction:column;gap:8px">
+    ${links.map(l=>`
+      <a href="${esc(l.url)}" target="_blank" rel="noopener" onclick="toast('Downloading: ${esc(l.label)} ⬇️','success')"
+         style="display:flex;align-items:center;gap:12px;padding:13px 15px;border:1.5px solid var(--border);border-radius:11px;color:var(--text);background:var(--card2);cursor:pointer;transition:border-color .18s"
+         onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
+        <span style="font-size:22px">${getDLIcon(l.label)}</span>
+        <div style="flex:1;min-width:0">
+          <div style="font-weight:700">${esc(l.label)}</div>
+          <div style="font-size:11px;color:var(--text3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(l.url)}</div>
+        </div>
+        <span style="color:var(--accent)">⬇️</span>
+      </a>
+    `).join('')}
+  </div>
+  <button class="btn btn-sec btn-full" style="margin-top:14px" onclick="closeModal()">Close</button>`);
+}
+
+async function teacherAnalytics(){
+  const uid2=S.user.id;
+  const {data:myBatches}=await sb.from('batches').select('*').eq('teacher_id',uid2);
+  const bArr=myBatches||[];
+  const bIds=bArr.map(b=>b.id);
+  const {data:subs}=await sb.from('subjects').select('*').in('batch_id',bIds.length?bIds:['none']);
+  const sArr=subs||[]; const sIds=sArr.map(s=>s.id);
+  const {data:chaps}=await sb.from('chapters').select('*').in('subject_id',sIds.length?sIds:['none']);
+  const cArr=chaps||[]; const cIds=cArr.map(c=>c.id);
+  const {data:cont}=await sb.from('content').select('*').in('chapter_id',cIds.length?cIds:['none']);
+  const allCont=cont||[];
+  const totalViews=allCont.reduce((n,c)=>n+(c.views||0),0);
+  const top=[...allCont].sort((a,b)=>(b.views||0)-(a.views||0)).slice(0,5);
+  const batchViews=bArr.map(b=>{
+    const bSubs=sArr.filter(s=>s.batch_id===b.id);
+    const bChaps=cArr.filter(c=>bSubs.some(s=>s.id===c.subject_id));
+    const bCont=allCont.filter(c=>bChaps.some(ch=>ch.id===c.chapter_id));
+    return {name:b.name.slice(0,12),views:bCont.reduce((n,c)=>n+(c.views||0),0)};
+  });
+  const maxV=Math.max(...batchViews.map(b=>b.views),1);
+  return `
+  <div class="g4" style="margin-bottom:18px">
+    <div class="stat"><div class="stat-ic ic-blue">📄</div><div><div class="stat-val">${allCont.length}</div><div class="stat-lbl">Content Items</div></div></div>
+    <div class="stat"><div class="stat-ic ic-yellow">👁️</div><div><div class="stat-val">${totalViews}</div><div class="stat-lbl">Unique Views</div></div></div>
+    <div class="stat"><div class="stat-ic ic-green">👨‍🎓</div><div><div class="stat-val">${bArr.reduce((n,b)=>n+(b.students||[]).length,0)}</div><div class="stat-lbl">Students</div></div></div>
+    <div class="stat"><div class="stat-ic ic-purple">📦</div><div><div class="stat-val">${bArr.length}</div><div class="stat-lbl">Batches</div></div></div>
+  </div>
+  <div class="g2">
+    <div class="card card-p24">
+      <div class="sec-t">📊 Views by Batch</div>
+      ${batchViews.length?`<div class="bar-chart">
+        ${batchViews.map(bv=>`<div class="bar-w">
+          <div class="bar" data-v="${bv.views}" style="height:${Math.max((bv.views/maxV)*90,4)}px"></div>
+          <div class="bar-lbl">${esc(bv.name)}</div>
+        </div>`).join('')}
+      </div>`:'<div class="empty"><span class="empty-ic">📊</span><p>No data yet</p></div>'}
+    </div>
+    <div class="card card-p24">
+      <div class="sec-t">🏆 Top Content</div>
+      ${top.length?top.map((c,i)=>`
+        <div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border)">
+          <span style="font-size:18px">${['🥇','🥈','🥉','4️⃣','5️⃣'][i]}</span>
+          <div style="flex:1;min-width:0">
+            <div style="font-size:13px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(c.name)}</div>
+            <div style="font-size:11px;color:var(--text2)">${c.type}</div>
+          </div>
+          <span class="badge b-blue">${c.views||0}</span>
+        </div>
+      `).join(''):'<div class="empty"><span class="empty-ic">🏆</span><p>No views yet</p></div>'}
+    </div>
+  </div>`;
+}
+
+/* =====================================================
+   ── STUDENT PAGES ──
+===================================================== */
+async function renderStudentPage(){
+  switch(S.sub){
+    case 'batches':
+      if(S.chapter) return await studentContentView();
+      if(S.subject)  return await studentChapters();
+      if(S.batch)    return await studentSubjects();
+      return await studentBrowseBatches();
+    case 'mybatches':
+      if(S.chapter) return await studentContentView();
+      if(S.subject)  return await studentChapters();
+      if(S.batch)    return await studentSubjects();
+      return await studentMyBatches();
+    case 'attendance':  return await studentAttendance();
+    case 'timer':       return await studentTimer();
+    case 'bookmarks':   return await studentBookmarks();
+    case 'announcements': return await studentAnnouncements();
+    case 'chat':          return await renderChatList();
+    case 'notifications': return await renderNotifs(S.user.id);
+    case 'profile':       return studentProfile();
+    default: return await studentDash();
+  }
+}
+
+async function studentDash(){
+  const uid2=S.user.id;
+  const [allBatches,att,bmarks,shours]=await Promise.all([
+    dbBatches(), dbAttend(uid2), dbBmarks(uid2), dbSHours(uid2)
+  ]);
+  const myBatches=allBatches.filter(b=>(b.students||[]).includes(uid2));
+  const now2=new Date(); const ym=`${now2.getFullYear()}-${String(now2.getMonth()+1).padStart(2,'0')}`;
+  const attM=att.filter(a=>a.date.startsWith(ym)).length;
+  const totalSecs=shours.reduce((n,s)=>n+(s.secs||0),0);
+  const th=Math.floor(totalSecs/3600); const tm=Math.floor((totalSecs%3600)/60);
+  return `
+  <div class="g4" style="margin-bottom:18px">
+    <div class="stat"><div class="stat-ic ic-blue">📦</div><div><div class="stat-val">${myBatches.length}</div><div class="stat-lbl">Joined Batches</div></div></div>
+    <div class="stat"><div class="stat-ic ic-green">📅</div><div><div class="stat-val">${att.length}</div><div class="stat-lbl">Days Present</div></div></div>
+    <div class="stat"><div class="stat-ic ic-purple">⏱️</div><div><div class="stat-val">${th}h ${tm}m</div><div class="stat-lbl">Study Time</div></div></div>
+    <div class="stat"><div class="stat-ic ic-yellow">🔖</div><div><div class="stat-val">${bmarks.length}</div><div class="stat-lbl">Bookmarks</div></div></div>
+  </div>
+  <div class="g2">
+    <div class="card card-p24">
+      <div class="sec-t">📅 This Month's Attendance</div>
+      <div style="font-size:36px;font-weight:800;color:var(--accent);margin-bottom:6px">${attM} <span style="font-size:16px;color:var(--text2);font-weight:500">days</span></div>
+      <div class="prog" style="margin-bottom:8px"><div class="prog-bar" style="width:${Math.min(attM/25*100,100)}%"></div></div>
+      <div style="font-size:12px;color:var(--text2)">${attM>=20?'🌟 Excellent!':attM>=15?'✅ Good':attM>=10?'⚠️ Needs improvement':'❌ Very low'}</div>
+      <button class="btn btn-p btn-sm" style="margin-top:12px;width:100%" onclick="markAttendance()">✅ Mark Today's Attendance</button>
+    </div>
+    <div class="card card-p24">
+      <div class="sec-t">📦 My Batches</div>
+      ${myBatches.slice(0,4).map(b=>`
+        <div class="item-row" onclick="S.sub='mybatches';S.batch=${JSON.stringify(b).replace(/"/g,'&quot;')};render()">
+          <div class="item-ic">${b.logo?`<img src="${esc(b.logo)}" alt="">`:'📦'}</div>
+          <div class="item-info"><h4>${esc(b.name)}</h4></div>
+          <span class="ia">›</span>
+        </div>
+      `).join('')||'<div class="empty"><span class="empty-ic">📦</span><p>No batches joined.<br><a onclick="navTo(\'batches\')">Browse →</a></p></div>'}
+    </div>
+  </div>`;
+}
+
+async function studentBrowseBatches(){
+  const [allBatches,allUsers]=await Promise.all([dbBatches(),dbUsers()]);
+  const uid2=S.user.id;
+  return `
+  <div class="search-row fg" style="margin-bottom:16px">
+    <span class="si">🔍</span>
+    <input class="fc" id="sbQ" placeholder="Search batches…" oninput="filterStuBatches(this.value)">
+  </div>
+  <div class="g3" id="sbGrid">
+    ${allBatches.map(b=>renderStuBatchCard(b,uid2,allUsers)).join('')||
+    '<div class="empty" style="grid-column:1/-1"><span class="empty-ic">📦</span><p>No batches yet</p></div>'}
+  </div>`;
+}
+async function filterStuBatches(q){
+  const [allBatches,allUsers]=await Promise.all([dbBatches(),dbUsers()]);
+  const uid2=S.user.id;
+  const arr=allBatches.filter(b=>b.name.toLowerCase().includes(q.toLowerCase()));
+  const el=document.getElementById('sbGrid');
+  if(el)el.innerHTML=arr.map(b=>renderStuBatchCard(b,uid2,allUsers)).join('')||'<div class="empty"><span class="empty-ic">🔍</span><p>No results</p></div>';
+}
+function renderStuBatchCard(b,uid2,allUsers){
+  const joined=(b.students||[]).includes(uid2);
+  const teacher=(allUsers||[]).find(u=>u.id===b.teacher_id);
+  return `
+  <div class="batch-card">
+    <div class="bch" style="cursor:pointer" onclick="S.sub='batches';S.batch=${JSON.stringify(b).replace(/"/g,'&quot;')};render()">
+      <div class="b-img">${b.logo?`<img src="${esc(b.logo)}" alt="">`:'📦'}</div>
+      <div>
+        <div style="font-size:15px;font-weight:800">${esc(b.name)}</div>
+        <div style="font-size:12px;color:var(--text2);margin-top:3px">${esc(b.description||'')}</div>
+        ${teacher?`<div style="font-size:11.5px;color:var(--text3);margin-top:3px">👨‍🏫 ${esc(teacher.name)}</div>`:''}
+      </div>
+    </div>
+    <div class="b-meta"><span>👨‍🎓 ${(b.students||[]).length}</span></div>
+    <div class="b-acts">
+      <button class="btn ${joined?'btn-sec':'btn-p'} btn-sm" style="flex:1" onclick="${joined?`leaveBatch('${b.id}')`:`joinBatch('${b.id}')`}">
+        ${joined?'✅ Joined':'➕ Join'}
+      </button>
+      ${joined?`<button class="btn btn-ghost btn-sm" onclick="S.sub='batches';S.batch=${JSON.stringify(b).replace(/"/g,'&quot;')};render()">Open →</button>`:''}
+    </div>
+  </div>`;
+}
+async function joinBatch(id){
+  const {data:b}=await sb.from('batches').select('*').eq('id',id).single();
+  if(!b)return;
+  const students=[...(b.students||[])];
+  if(students.includes(S.user.id)){toast('Already joined!','warning');return;}
+  students.push(S.user.id);
+  await sb.from('batches').update({students}).eq('id',id);
+  // notify teacher
+  if(b.teacher_id) await pushNotif(b.teacher_id,'👨‍🎓 New Student',`${S.user.name} joined your batch "${b.name}"`);
+  toast('Joined batch! 🎉','success'); render();
+}
+async function leaveBatch(id){
+  showConfirm('Leave this batch? You can rejoin later with the batch code.', '📦', async () => {
+    const {data:b}=await sb.from('batches').select('*').eq('id',id).single();
+    if(!b)return;
+    await sb.from('batches').update({students:(b.students||[]).filter(s=>s!==S.user.id)}).eq('id',id);
+    toast('Left batch','warning'); render();
+  }, '🚪 Leave', 'btn-warn');
+}
+
+async function studentMyBatches(){
+  const uid2=S.user.id;
+  const {data:batches}=await sb.from('batches').select('*').contains('students',[uid2]);
+  const arr=batches||[];
+  return `
+  <div class="g3">
+    ${arr.map(b=>`
+      <div class="batch-card" onclick="S.batch=${JSON.stringify(b).replace(/"/g,'&quot;')};render()" style="cursor:pointer">
+        <div class="bch">
+          <div class="b-img">${b.logo?`<img src="${esc(b.logo)}" alt="">`:'📦'}</div>
+          <div><div style="font-size:15px;font-weight:800">${esc(b.name)}</div><div style="font-size:12px;color:var(--text2)">${esc(b.description||'')}</div></div>
+        </div>
+        <button class="btn btn-p btn-sm" style="width:100%;margin-top:12px" onclick="S.batch=${JSON.stringify(b).replace(/"/g,'&quot;')};render()">Open →</button>
+      </div>
+    `).join('')||'<div class="empty" style="grid-column:1/-1"><span class="empty-ic">📦</span><p>No batches joined.<br><a onclick="navTo(\'batches\')">Browse →</a></p></div>'}
+  </div>`;
+}
+
+async function studentSubjects(){
+  const b=S.batch;
+  const {data:subs}=await sb.from('subjects').select('*').eq('batch_id',b.id);
+  return `
+  <div class="bc">
+    <span class="bc-a" onclick="S.batch=null;render()">← Back</span>
+    <span class="bc-sep">/</span>
+    <span class="bc-cur">📦 ${esc(b.name)}</span>
+  </div>
+  <div class="sec-t">📖 Subjects</div>
+  ${(subs||[]).map(s=>`
+    <div class="item-row" onclick="S.subject=${JSON.stringify(s).replace(/"/g,'&quot;')};render()">
+      <div class="item-ic">${s.logo?`<img src="${esc(s.logo)}" alt="">`:'📖'}</div>
+      <div class="item-info"><h4>${esc(s.name)}</h4></div>
+      <span class="ia">›</span>
+    </div>
+  `).join('')||'<div class="empty"><span class="empty-ic">📖</span><p>No subjects yet</p></div>'}`;
+}
+async function studentChapters(){
+  const s=S.subject; const b=S.batch;
+  const {data:chaps}=await sb.from('chapters').select('*').eq('subject_id',s.id);
+  return `
+  <div class="bc">
+    <span class="bc-a" onclick="S.batch=null;render()">📦</span>
+    <span class="bc-sep">/</span>
+    <span class="bc-a" onclick="S.subject=null;render()">${esc(b.name)}</span>
+    <span class="bc-sep">/</span>
+    <span class="bc-cur">📖 ${esc(s.name)}</span>
+  </div>
+  <div class="sec-t">📝 Chapters</div>
+  ${(chaps||[]).map(c=>`
+    <div class="item-row" onclick="S.chapter=${JSON.stringify(c).replace(/"/g,'&quot;')};render()">
+      <div class="item-ic">${c.logo?`<img src="${esc(c.logo)}" alt="">`:'📝'}</div>
+      <div class="item-info"><h4>${esc(c.name)}</h4></div>
+      <span class="ia">›</span>
+    </div>
+  `).join('')||'<div class="empty"><span class="empty-ic">📝</span><p>No chapters yet</p></div>'}`;
+}
+async function studentContentView(){
+  const ch=S.chapter; const s=S.subject; const b=S.batch;
+  const {data:allItems}=await sb.from('content').select('*').eq('chapter_id',ch.id).order('ts');
+  const all=allItems||[];
+  const notes=all.filter(c=>c.type==='notes');
+  const lecs=all.filter(c=>c.type==='lecture');
+  const dpp=all.filter(c=>c.type==='dpp');
+  const cur=S.cTab==='notes'?notes:S.cTab==='lecture'?lecs:dpp;
+  return `
+  <div class="bc">
+    <span class="bc-a" onclick="S.batch=null;S.subject=null;S.chapter=null;render()">📦</span>
+    <span class="bc-sep">/</span>
+    <span class="bc-a" onclick="S.subject=null;S.chapter=null;render()">${esc(b.name)}</span>
+    <span class="bc-sep">/</span>
+    <span class="bc-a" onclick="S.chapter=null;render()">${esc(s.name)}</span>
+    <span class="bc-sep">/</span>
+    <span class="bc-cur">📝 ${esc(ch.name)}</span>
+  </div>
+  <div class="tabs">
+    <div class="tab ${S.cTab==='notes'?'on':''}" onclick="S.cTab='notes';render()">📄 Notes (${notes.length})</div>
+    <div class="tab ${S.cTab==='lecture'?'on':''}" onclick="S.cTab='lecture';render()">🎥 Lectures (${lecs.length})</div>
+    <div class="tab ${S.cTab==='dpp'?'on':''}" onclick="S.cTab='dpp';render()">📋 DPP (${dpp.length})</div>
+  </div>
+  ${cur.map(item=>renderContentItem(item,false)).join('')||
+  '<div class="empty"><span class="empty-ic">📭</span><p>No content here yet</p></div>'}`;
+}
+
+async function studentAttendance(){
+  const uid2=S.user.id;
+  const att=await dbAttend(uid2);
+  const markedToday=att.some(a=>a.date===today());
+  const n2=new Date(); const year=n2.getFullYear(); const month=n2.getMonth();
+  const daysInMonth=new Date(year,month+1,0).getDate();
+  const firstDay=new Date(year,month,1).getDay();
+  const attDates=new Set(att.map(a=>a.date));
+  const days=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const ym=`${year}-${String(month+1).padStart(2,'0')}`;
+  const attM=att.filter(a=>a.date.startsWith(ym)).length;
+  return `
+  <div class="g2" style="margin-bottom:18px">
+    <div class="stat"><div class="stat-ic ic-green">📅</div><div><div class="stat-val">${att.length}</div><div class="stat-lbl">Total Present</div></div></div>
+    <div class="stat"><div class="stat-ic ic-blue">📆</div><div><div class="stat-val">${attM}</div><div class="stat-lbl">This Month</div></div></div>
+  </div>
+  <div class="card card-p24" style="margin-bottom:14px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+      <div class="sec-t" style="margin:0">📅 ${n2.toLocaleString('default',{month:'long'})} ${year}</div>
+      <button class="btn ${markedToday?'btn-sec':'btn-p'} btn-sm" onclick="markAttendance()" ${markedToday?'disabled':''}>
+        ${markedToday?'✅ Marked Today':'✅ Mark Present'}
+      </button>
+    </div>
+    <div class="att-grid">
+      ${days.map(d=>`<div class="att-cell hdr">${d}</div>`).join('')}
+      ${Array(firstDay).fill(0).map(()=>'<div class="att-cell"></div>').join('')}
+      ${Array.from({length:daysInMonth},(_,i)=>{
+        const dStr=`${year}-${String(month+1).padStart(2,'0')}-${String(i+1).padStart(2,'0')}`;
+        return `<div class="att-cell ${attDates.has(dStr)?'present':''} ${dStr===today()?'today':''}">${i+1}</div>`;
+      }).join('')}
+    </div>
+  </div>`;
+}
+async function markAttendance(){
+  const uid2=S.user.id;
+  const {data:existing}=await sb.from('attendance').select('id').eq('user_id',uid2).eq('date',today());
+  if(existing&&existing.length){toast('Already marked today!','warning');return;}
+  const {error}=await sb.from('attendance').insert({id:uid(),user_id:uid2,date:today(),ts:now()});
+  if(error){toast(error.message,'error');return;}
+  toast('Attendance marked! ✅','success'); render();
+}
+
+async function studentTimer(){
+  const uid2=S.user.id;
+  const shours=await dbSHours(uid2);
+  const totalSecs=shours.reduce((n,s)=>n+(s.secs||0),0);
+  const th=Math.floor(totalSecs/3600); const tm=Math.floor((totalSecs%3600)/60);
+  return `
+  <div class="card card-p24" style="text-align:center;margin-bottom:14px">
+    <div class="sec-t" style="justify-content:center">⏱️ Study Timer</div>
+    <div class="timer-display" id="timerDisp">${fmtSec(S.timerSecs)}</div>
+    <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+      <button class="btn btn-p" id="timerBtn" onclick="timerToggle()">${S.timerOn?'⏸️ Pause':'▶️ Start'}</button>
+      <button class="btn btn-del" onclick="timerSave()">⏹️ Stop & Save</button>
+      <button class="btn btn-sec" onclick="timerClear()">🗑️ Clear</button>
+    </div>
+  </div>
+  <div class="g2">
+    <div class="stat"><div class="stat-ic ic-purple">⏱️</div><div><div class="stat-val">${th}h ${tm}m</div><div class="stat-lbl">Total Study Time</div></div></div>
+    <div class="stat"><div class="stat-ic ic-blue">📅</div><div><div class="stat-val">${shours.length}</div><div class="stat-lbl">Sessions</div></div></div>
+  </div>
+  ${shours.length?`<div class="card card-p24" style="margin-top:14px">
+    <div class="sec-t">📋 Sessions</div>
+    <div class="tw"><table><thead><tr><th>Date</th><th>Duration</th></tr></thead><tbody>
+      ${[...shours].reverse().slice(0,10).map(s=>`<tr><td>${fmtD(s.ts)}</td><td>${fmtSec(s.secs||0)}</td></tr>`).join('')}
+    </tbody></table></div>
+  </div>`:''}`;
+}
+function timerToggle(){
+  S.timerOn=!S.timerOn;
+  if(S.timerOn){
+    S.timerInterval=setInterval(()=>{
+      S.timerSecs++;
+      const d=document.getElementById('timerDisp');
+      const b=document.getElementById('timerBtn');
+      if(d)d.textContent=fmtSec(S.timerSecs);
+      if(b)b.textContent='⏸️ Pause';
+    },1000);
+  } else {
+    clearInterval(S.timerInterval);
+    const b=document.getElementById('timerBtn'); if(b)b.textContent='▶️ Start';
+  }
+}
+async function timerSave(){
+  if(S.timerSecs===0){toast('Timer is at 0!','warning');return;}
+  clearInterval(S.timerInterval); S.timerOn=false;
+  const secs=S.timerSecs; S.timerSecs=0;
+  await sb.from('study_hours').insert({id:uid(),user_id:S.user.id,secs,ts:now()});
+  toast(`Session saved: ${fmtSec(secs)} 🎉`,'success'); render();
+}
+function timerClear(){ clearInterval(S.timerInterval); S.timerOn=false; S.timerSecs=0; render(); }
+
+async function studentBookmarks(){
+  const uid2=S.user.id;
+  const {data:bmarks}=await sb.from('bookmarks').select('content_id').eq('user_id',uid2);
+  const ids=(bmarks||[]).map(b=>b.content_id);
+  if(!ids.length) return '<div class="empty"><span class="empty-ic">🔖</span><p>No bookmarks yet.</p></div>';
+  const {data:items}=await sb.from('content').select('*').in('id',ids);
+  return `
+  <div class="sec-t">🔖 Bookmarks (${(items||[]).length})</div>
+  ${(items||[]).map(item=>renderContentItem(item,false)).join('')}`;
+}
+async function toggleBookmark(cid){
+  const uid2=S.user.id;
+  const {data:existing}=await sb.from('bookmarks').select('id').eq('user_id',uid2).eq('content_id',cid);
+  if(existing&&existing.length){
+    await sb.from('bookmarks').delete().eq('user_id',uid2).eq('content_id',cid);
+    toast('Bookmark removed','warning');
+  } else {
+    await sb.from('bookmarks').insert({id:uid(),user_id:uid2,content_id:cid,ts:now()});
+    toast('Bookmarked! 🔖','success');
+  }
+  render();
+}
+
+function studentProfile(){
+  const u=S.user;
+  return `
+  <div class="card card-p24" style="max-width:560px;margin:0 auto">
+    <div class="sec-t">👤 My Profile</div>
+    <div style="display:flex;align-items:center;gap:18px;margin-bottom:24px">
+      <div class="profile-photo" onclick="document.getElementById('photoInput').click()">
+        ${u.photo?`<img src="${esc(u.photo)}" alt="">`:`<span>${(u.name||'U').charAt(0).toUpperCase()}</span>`}
+        <div class="photo-ov">📷</div>
+      </div>
+      <div>
+        <div style="font-size:20px;font-weight:800">${esc(u.name)}</div>
+        <div style="color:var(--text2);font-size:13.5px">${esc(u.email)}</div>
+        <span class="badge b-cyan" style="margin-top:6px">👨‍🎓 Student</span>
+      </div>
+    </div>
+    <input type="file" id="photoInput" accept="image/*" style="display:none" onchange="handlePhotoUpload(this)">
+    <div class="fg"><label>Full Name</label><input class="fc" id="pName" value="${esc(u.name)}"></div>
+    <div class="fg"><label>Email (read-only)</label><input class="fc" value="${esc(u.email)}" disabled></div>
+    <div class="fg"><label>Phone (read-only)</label><input class="fc" value="${esc(u.phone||'—')}" disabled></div>
+    <button class="btn btn-p btn-full" style="margin-top:4px" onclick="saveProfile()">💾 Save Changes</button>
+    <div style="margin-top:18px;padding-top:16px;border-top:1px solid var(--border)">
+      <div class="sec-t-sm">🔐 Passkey (Biometric Login)</div>
+      <div class="pk-status-card">
+        <div class="pk-icon-wrap">👆</div>
+        <div style="flex:1;min-width:0">
+          <div style="font-weight:700;font-size:14px;margin-bottom:4px">Device Biometric Login</div>
+          <div id="pkStatus" style="font-size:12.5px;color:var(--text2)">Checking status…</div>
+        </div>
+        <span id="pkBadge" class="pk-badge unregistered">Not set</span>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-p" onclick="registerPasskey()" id="pkRegBtn">
+          👆 Register Passkey
+        </button>
+        <button class="btn btn-del btn-sm" onclick="deletePasskey()" id="pkDelBtn" style="display:none">
+          🗑️ Remove Passkey
+        </button>
+      </div>
+      <div style="margin-top:10px;padding:10px;background:var(--bg3);border-radius:9px;font-size:12px;color:var(--text2);line-height:1.6">
+        ℹ️ Passkey uses your device sensor (fingerprint, Face ID, Windows Hello, etc.) 
+        to securely log you in — no password needed. Works across any browser on this device.
+      </div>
+    </div>
+  </div>`;
+}
+async function handlePhotoUpload(input){
+  const file=input.files[0]; if(!file)return;
+  toast('Uploading photo…','info');
+  try {
+    const url=await uploadFile(file,null);
+    await sb.from('profiles').update({photo:url}).eq('id',S.user.id);
+    S.user={...S.user,photo:url};
+    toast('Photo updated! 📷','success'); render();
+  } catch(e){ toast('Upload failed: '+e.message,'error'); }
+}
+async function saveProfile(){
+  const name=(document.getElementById('pName')?.value||'').trim();
+  if(!name){toast('Name required','warning');return;}
+  const {error}=await sb.from('profiles').update({name}).eq('id',S.user.id);
+  if(error){toast(error.message,'error');return;}
+  S.user={...S.user,name};
+  await addLog(`${name} updated profile`);
+  toast('Profile saved! 💾','success'); render();
+}
+
+/* =====================================================
+   ── ONLINE STATUS ──
+===================================================== */
+async function pingOnline(){
+  if(!S.user||S.user.role==='admin') return;
+  try{ await sb.from('profiles').update({last_active:Date.now()}).eq('id',S.user.id); }catch{}
+}
+function isOnline(last_active){
+  if(!last_active) return false;
+  return (Date.now()-last_active)<30000; // 30 s
+}
+function onlineText(last_active){
+  if(isOnline(last_active)) return '<div class="chat-hdr-status on">🟢 Online</div>';
+  if(!last_active) return '<div class="chat-hdr-status off">⚫ Offline</div>';
+  const diff=Date.now()-last_active;
+  const mins=Math.floor(diff/60000);
+  if(mins<60) return `<div class="chat-hdr-status off">last seen ${mins}m ago</div>`;
+  const hrs=Math.floor(mins/60);
+  if(hrs<24) return `<div class="chat-hdr-status off">last seen ${hrs}h ago</div>`;
+  return `<div class="chat-hdr-status off">last seen ${fmtD(last_active)}</div>`;
+}
+
+/* =====================================================
+   ── CHAT v2 — HELPERS ──
+===================================================== */
+async function getChatPeers(){
+  const uid2=S.user.id; const role=S.user.role;
+  if(role==='admin'){
+    // Admin: can message everyone
+    const {data}=await sb.from('profiles').select('*').order('name');
+    return data||[];
+  }
+  if(role==='teacher'){
+    const {data:myBatches}=await sb.from('batches').select('*').eq('teacher_id',uid2);
+    const stuIds=[...new Set((myBatches||[]).flatMap(b=>b.students||[]))];
+    let students=[];
+    if(stuIds.length){ const {data}=await sb.from('profiles').select('*').in('id',stuIds); students=data||[]; }
+    // Teacher can also message Admin
+    const adminPeer={id:'admin',name:'Admin',role:'admin',email:'',photo:null,last_active:null};
+    return [...students,adminPeer];
+  }
+  // Student: only teachers of their batches
+  const {data:batches}=await sb.from('batches').select('teacher_id').contains('students',[uid2]);
+  const tIds=[...new Set((batches||[]).map(b=>b.teacher_id).filter(Boolean))];
+  if(!tIds.length) return [];
+  const {data}=await sb.from('profiles').select('*').in('id',tIds);
+  return data||[];
+}
+
+async function markMsgsSeen(peerId){
+  const uid2=S.user.id; const seenAt=Date.now();
+  await sb.from('messages')
+    .update({is_read:true,seen_at:seenAt})
+    .eq('receiver_id',uid2).eq('sender_id',peerId).eq('is_read',false);
+}
+
+function getMsgTick(msg,myId){
+  if((msg.sender_id||msg.from_id)!==myId) return '';
+  if(msg.seen_at) return '<span class="tick t-seen">✓✓</span>';
+  if(msg.is_read) return '<span class="tick t-read">✓✓</span>';
+  return '<span class="tick t-sent">✓</span>';
+}
+
+function renderMsgBubble(m,uid2){
+  const isMe=(m.sender_id||m.from_id)===uid2;
+  return `
+  <div class="chat-msg ${isMe?'me':'them'}" id="msg_${m.id}">
+    <div class="chat-bubble">${esc(m.message_text||m.text||'')}</div>
+    <div class="chat-meta">
+      <span class="chat-ts">${fmtT(m.created_at||m.ts)}</span>
+      ${getMsgTick(m,uid2)}
+    </div>
+  </div>`;
+}
+
+/* Build the right-panel (chat window) HTML */
+async function buildChatPanel(peerId){
+  let peer;
+  if(peerId==='admin'){
+    peer={id:'admin',name:'Admin',role:'admin',photo:null,last_active:null};
+  } else {
+    peer=S.chatPeers.find(p=>p.id===peerId)||null;
+    if(!peer){
+      const {data}=await sb.from('profiles').select('*').eq('id',peerId).single();
+      peer=data||{name:'Unknown',role:'',photo:null,last_active:null};
+    }
+  }
+  const uid2=S.user.id;
+  const msgs=await dbMsgs(uid2,peerId);
+  const avCont=peer.photo?`<img src="${esc(peer.photo)}" alt="">`:((peer.name||'?').charAt(0).toUpperCase());
+  const roleLbl=peer.role==='teacher'?'👨‍🏫':peer.role==='admin'?'⚙️':'👨‍🎓';
+  return `
+  <div class="chat-hdr">
+    <button class="chat-hdr-back" onclick="backToChatList()">←</button>
+    <div class="chat-hdr-av">${avCont}</div>
+    <div style="min-width:0">
+      <div class="chat-hdr-name">${roleLbl} ${esc(peer.name)}</div>
+      ${onlineText(peer.last_active)}
+    </div>
+  </div>
+  <div class="chat-msgs" id="chatMsgs">
+    ${msgs.length
+      ?msgs.map(m=>renderMsgBubble(m,uid2)).join('')
+      :'<div style="text-align:center;color:var(--text3);padding:30px;font-size:13px;margin:auto">Say hello! 👋</div>'}
+  </div>
+  <div class="chat-input-area">
+    <input class="chat-inp" id="chatInput" placeholder="Type a message…"
+      onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMsg('${peerId}')}">
+    <button class="chat-send-btn" onclick="sendMsg('${peerId}')">➤</button>
+  </div>`;
+}
+
+/* Open a specific chat (called from contact click) */
+async function openChatWith(peerId){
+  S.chatWith=peerId;
+  const left=document.getElementById('chatLeft');
+  const right=document.getElementById('chatRight');
+  if(left)  left.classList.add('mob-hidden');
+  if(right){ right.classList.remove('mob-hidden'); right.innerHTML=await buildChatPanel(peerId); }
+  await markMsgsSeen(peerId);
+  const box=document.getElementById('chatMsgs');
+  if(box) box.scrollTop=box.scrollHeight;
+  // Mark active contact
+  document.querySelectorAll('.chat-contact').forEach(el=>{
+    el.classList.toggle('active', el.dataset.pid===peerId);
+    if(el.dataset.pid===peerId){
+      const pill=el.querySelector('.chat-unread-pill'); if(pill) pill.remove();
+      el.classList.remove('has-unread');
+    }
+  });
+}
+
+/* Back to contact list (mobile) */
+function backToChatList(){
+  S.chatWith=null;
+  const left=document.getElementById('chatLeft');
+  const right=document.getElementById('chatRight');
+  if(left)  left.classList.remove('mob-hidden');
+  if(right) right.classList.add('mob-hidden');
+}
+
+/* Live search without full re-render */
+function renderContactSearch(q){
+  const uid2=S.user.id; const peers=S.chatPeers;
+  const filtered=q?peers.filter(p=>p.name.toLowerCase().includes(q.toLowerCase())):peers;
+  const box=document.getElementById('chatContactsList');
+  if(!box) return;
+  box.innerHTML=buildContactList(filtered,uid2,[]);
+}
+
+function buildContactList(peers,uid2,peerData){
+  if(!peers.length) return '<div class="empty"><span class="empty-ic">💬</span><p>No contacts found</p></div>';
+  return peers.map(p=>{
+    const pd=peerData.find(x=>x.id===p.id)||p;
+    const online=isOnline(pd.last_active);
+    const av=p.photo?`<img src="${esc(p.photo)}" alt="">`:((p.name||'?').charAt(0).toUpperCase());
+    const roleLbl=p.role==='teacher'?'👨‍🏫':p.role==='admin'?'⚙️':'👨‍🎓';
+    const preview=pd.lastMsg
+      ?(pd.lastMsg.sender_id===uid2||pd.lastMsg.from_id===uid2
+          ?'You: '+(pd.lastMsg.message_text||pd.lastMsg.text||'')
+          :(pd.lastMsg.message_text||pd.lastMsg.text||'')).slice(0,42)
+      :'Tap to chat…';
+    const timeStr=pd.lastMsg?fmtT(pd.lastMsg.created_at||pd.lastMsg.ts):'';
+    const unread=pd.unread||0;
+    return `
+    <div class="chat-contact ${S.chatWith===p.id?'active':''} ${unread>0?'has-unread':''}"
+         data-pid="${p.id}" onclick="openChatWith('${p.id}')">
+      <div class="chat-av">
+        ${av}
+        <span class="online-ring ${online?'on':'off'}"></span>
+      </div>
+      <div class="chat-ci">
+        <div class="chat-ci-top">
+          <span class="chat-ci-name">${roleLbl} ${esc(p.name)}</span>
+          <span class="chat-ci-time">${timeStr}</span>
+        </div>
+        <div class="chat-ci-preview">${esc(preview)}</div>
+      </div>
+      ${unread>0?`<div class="chat-unread-pill">${unread}</div>`:''}
+    </div>`;
+  }).join('');
+}
+
+/* =====================================================
+   ── CHAT v2 — MAIN RENDER ──
+===================================================== */
+async function renderChatList(){
+  const uid2=S.user.id;
+  const peers=await getChatPeers();
+  S.chatPeers=peers;
+
+  // Fetch last-message + unread count per peer
+  const peerData=await Promise.all(peers.map(async p=>{
+    const msgs=await dbMsgs(uid2,p.id);
+    const lastMsg=msgs[msgs.length-1]||null;
+    const unread=msgs.filter(m=>(m.receiver_id||m.to_id)===uid2&&!m.is_read&&!m.read).length;
+    return {...p,lastMsg,unread};
+  }));
+  // Sort by last message timestamp
+  peerData.sort((a,b)=>{
+    const at=a.lastMsg?.created_at||a.lastMsg?.ts||0;
+    const bt=b.lastMsg?.created_at||b.lastMsg?.ts||0;
+    return bt-at;
+  });
+
+  const contactsHtml=buildContactList(peerData,uid2,peerData);
+  const rightHtml=S.chatWith
+    ?await buildChatPanel(S.chatWith)
+    :`<div class="chat-right-empty"><span style="font-size:52px">💬</span><span>Select a contact to start messaging</span></div>`;
+
+  return `
+  <div class="chat-wrap">
+    <div class="chat-left ${S.chatWith?'mob-hidden':''}" id="chatLeft">
+      <div class="chat-left-head">
+        <div class="chat-left-title">💬 Messages</div>
+        <div class="chat-search-wrap">
+          <span class="chat-search-ic">🔍</span>
+          <input class="chat-search-inp" placeholder="Search contacts…"
+            value="${esc(S.msgSearch)}"
+            oninput="S.msgSearch=this.value;renderContactSearch(this.value)">
+        </div>
+      </div>
+      <div class="chat-contacts" id="chatContactsList">${contactsHtml}</div>
+    </div>
+    <div class="chat-right ${S.chatWith?'':'mob-hidden'}" id="chatRight">
+      ${rightHtml}
+    </div>
+  </div>`;
+}
+
+/* Legacy wrapper — keep backward compat with any old calls */
+async function renderChat(peerId){ S.chatWith=peerId; return await renderChatList(); }
+
+async function sendMsg(toId){
+  const inp=document.getElementById('chatInput');
+  const text=(inp?.value||'').trim(); if(!text)return;
+  inp.value=''; inp.focus();
+  const senderRole=S.user.role||'student';
+  let receiverRole='student';
+  if(toId==='admin') receiverRole='admin';
+  else{ const p=S.chatPeers.find(x=>x.id===toId); receiverRole=p?.role||'student'; }
+  const msg={
+    id:uid(), sender_id:S.user.id, sender_role:senderRole,
+    receiver_id:toId, receiver_role:receiverRole,
+    message_text:text, created_at:Date.now(),
+    is_read:false, seen_at:null
+  };
+  await sb.from('messages').insert(msg);
+  appendChatMsg(msg);
+  await pushNotif(toId,`💬 ${S.user.name}`,text.slice(0,80));
+}
+
+/* =====================================================
+   ── ANNOUNCEMENTS ──
+===================================================== */
+async function renderAnnouncements(){
+  const uid2=S.user.id;
+  const {data:myBatches}=await sb.from('batches').select('*').eq('teacher_id',uid2);
+  const bArr=myBatches||[];
+  const bIds=bArr.map(b=>b.id);
+  const anns=await dbAnnouncements(bIds);
+  return `
+  <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:18px">
+    <div class="sec-t" style="margin:0">📢 Announcements</div>
+    <button class="btn btn-p btn-sm" onclick="modalCreateAnn()">+ New Announcement</button>
+  </div>
+  ${anns.length?anns.map(a=>{
+    const batch=bArr.find(b=>b.id===a.batch_id);
+    return `
+    <div class="ann-card">
+      ${a.image_url?`<img class="ann-img" src="${esc(a.image_url)}" alt="" loading="lazy">`:''}
+      <div class="ann-body">
+        <div class="ann-title">${esc(a.title)}</div>
+        ${a.description?`<div class="ann-desc">${esc(a.description)}</div>`:''}
+        <div class="ann-footer">
+          <div class="ann-meta">
+            📅 ${fmtD(a.created_at)}
+            ${batch?`<span class="ann-batch-tag">📦 ${esc(batch.name)}</span>`:''}
+          </div>
+          <button class="btn btn-del btn-xs" onclick="deleteAnn('${a.id}')">🗑️</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('')
+  :'<div class="empty"><span class="empty-ic">📢</span><p>No announcements yet.<br>Create one for your students!</p></div>'}`;
+}
+
+function modalCreateAnn(){
+  (async()=>{
+    const {data:myBatches}=await sb.from('batches').select('*').eq('teacher_id',S.user.id);
+    const bArr=myBatches||[];
+    openModal(`
+    <div class="mh"><h3>📢 New Announcement</h3><button class="mc-btn" onclick="closeModal()">✕</button></div>
+    <div class="fg">
+      <label>Batch *</label>
+      <select class="fc" id="ann_batch">
+        <option value="">Select batch…</option>
+        ${bArr.map(b=>`<option value="${b.id}">${esc(b.name)}</option>`).join('')}
+      </select>
+    </div>
+    <div class="fg"><label>Title *</label><input class="fc" id="ann_title" placeholder="Announcement title…"></div>
+    <div class="fg"><label>Description</label><textarea class="fc" id="ann_desc" rows="3" placeholder="Details, homework, notes…" style="resize:vertical"></textarea></div>
+    <div class="fg"><label>Image URL (optional)</label><input class="fc" id="ann_img" placeholder="https://…"></div>
+    <div class="m-actions">
+      <button class="btn btn-sec" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-p" onclick="createAnn()">📢 Post</button>
+    </div>`);
+  })();
+}
+
+async function createAnn(){
+  const batch_id=(document.getElementById('ann_batch')?.value||'').trim();
+  const title=(document.getElementById('ann_title')?.value||'').trim();
+  const description=(document.getElementById('ann_desc')?.value||'').trim();
+  const image_url=(document.getElementById('ann_img')?.value||'').trim()||null;
+  if(!batch_id||!title){toast('Batch and title required','warning');return;}
+  const ann={id:uid(),teacher_id:S.user.id,batch_id,title,description,image_url,created_at:Date.now()};
+  const {error}=await sb.from('announcements').insert(ann);
+  if(error){toast(error.message,'error');return;}
+  // Notify batch students
+  const {data:batch}=await sb.from('batches').select('students').eq('id',batch_id).single();
+  if(batch?.students?.length){
+    await Promise.all(batch.students.map(sid=>pushNotif(sid,'📢 New Announcement',title)));
+  }
+  closeModal(); toast('Announcement posted! 📢','success'); render();
+}
+
+async function deleteAnn(id){
+  showConfirm('Delete this announcement?','📢',async()=>{
+    await sb.from('announcements').delete().eq('id',id);
+    toast('Deleted','warning'); render();
+  },'🗑️ Delete','btn-del');
+}
+
+/* Student: view announcements for their batches */
+async function studentAnnouncements(){
+  const uid2=S.user.id;
+  const {data:batches}=await sb.from('batches').select('*').contains('students',[uid2]);
+  const myBatches=batches||[];
+  const bIds=myBatches.map(b=>b.id);
+  const anns=await dbAnnouncements(bIds);
+  return `
+  <div class="sec-t">📢 Announcements</div>
+  ${anns.length?anns.map(a=>{
+    const batch=myBatches.find(b=>b.id===a.batch_id);
+    return `
+    <div class="ann-card">
+      ${a.image_url?`<img class="ann-img" src="${esc(a.image_url)}" alt="" loading="lazy">`:''}
+      <div class="ann-body">
+        <div class="ann-title">${esc(a.title)}</div>
+        ${a.description?`<div class="ann-desc">${esc(a.description)}</div>`:''}
+        <div class="ann-footer">
+          <div class="ann-meta">
+            📅 ${fmtD(a.created_at)}
+            ${batch?`<span class="ann-batch-tag">📦 ${esc(batch.name)}</span>`:''}
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }).join('')
+  :'<div class="empty"><span class="empty-ic">📢</span><p>No announcements from your teachers yet.</p></div>'}`;
+}
+
+/* =====================================================
+   ── NOTIFICATIONS ──
+===================================================== */
+async function renderNotifs(targetId){
+  const notifs=await dbNotifs(targetId);
+  // mark all read
+  await sb.from('notifications').update({read:true}).eq('user_id',targetId);
+  S.unreadNotifs=0;
+  return `
+  <div class="sec-t">🔔 Notifications</div>
+  ${notifs.length?notifs.map(n=>`
+    <div class="notif ${n.read?'':'unread'}">
+      <div class="notif-ic">🔔</div>
+      <div>
+        <div class="notif-t">${esc(n.title)}</div>
+        <div class="notif-m">${esc(n.msg)}</div>
+        <div class="notif-tm">${fmtD(n.ts)} · ${fmtT(n.ts)}</div>
+      </div>
+    </div>
+  `).join(''):'<div class="empty"><span class="empty-ic">🔔</span><p>All caught up!</p></div>'}`;
+}
+
+/* =====================================================
+   BOOT
+===================================================== */
+async function init(){
+  loadTheme();
+  // Admin session (localStorage-based, no Supabase auth needed)
+  const adminSess=lsGet('fs_admin_sess');
+  if(adminSess&&adminSess.id==='admin'){
+    S.user=adminSess; S.page='admin'; S.sub='dashboard';
+    render(); return;
+  }
+  // Supabase auth session
+  const {data:{session}}=await sb.auth.getSession();
+  if(session){
+    const {data:profile}=await sb.from('profiles').select('*').eq('id',session.user.id).single();
+    if(profile){
+      S.user=profile;
+      S.page=profile.role==='teacher'?(profile.approved?'teacher':'waiting'):'student';
+      S.sub='dashboard';
+      setupRealtime();
+      // Online presence
+      pingOnline();
+      S.presenceInterval=setInterval(pingOnline,20000);
+    }
+  }
+  render();
+}
+
+init();
+
+</script>
+</body>
+</html>
